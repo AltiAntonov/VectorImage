@@ -1,0 +1,624 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AA3000000000000000000001 /* VectorImageCore in Frameworks */ = {isa = PBXBuildFile; productRef = AA3000000000000000000003 /* VectorImageCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6CFB780F2F996A5C0028F1A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6CFB77F92F996A5B0028F1A6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6CFB78002F996A5B0028F1A6;
+			remoteInfo = VectorImageMacExample;
+		};
+		6CFB78192F996A5C0028F1A6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6CFB77F92F996A5B0028F1A6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6CFB78002F996A5B0028F1A6;
+			remoteInfo = VectorImageMacExample;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		6CFB78012F996A5B0028F1A6 /* VectorImageMacExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VectorImageMacExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6CFB780E2F996A5C0028F1A6 /* VectorImageMacExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VectorImageMacExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6CFB78182F996A5C0028F1A6 /* VectorImageMacExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VectorImageMacExampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		6CFB78032F996A5B0028F1A6 /* VectorImageMacExample */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = VectorImageMacExample;
+			sourceTree = "<group>";
+		};
+		6CFB78112F996A5C0028F1A6 /* VectorImageMacExampleTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = VectorImageMacExampleTests;
+			sourceTree = "<group>";
+		};
+		6CFB781B2F996A5C0028F1A6 /* VectorImageMacExampleUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = VectorImageMacExampleUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6CFB77FE2F996A5B0028F1A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA3000000000000000000001 /* VectorImageCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6CFB780B2F996A5C0028F1A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6CFB78152F996A5C0028F1A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6CFB77F82F996A5B0028F1A6 = {
+			isa = PBXGroup;
+			children = (
+				6CFB78032F996A5B0028F1A6 /* VectorImageMacExample */,
+				6CFB78112F996A5C0028F1A6 /* VectorImageMacExampleTests */,
+				6CFB781B2F996A5C0028F1A6 /* VectorImageMacExampleUITests */,
+				6CFB78022F996A5B0028F1A6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6CFB78022F996A5B0028F1A6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6CFB78012F996A5B0028F1A6 /* VectorImageMacExample.app */,
+				6CFB780E2F996A5C0028F1A6 /* VectorImageMacExampleTests.xctest */,
+				6CFB78182F996A5C0028F1A6 /* VectorImageMacExampleUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6CFB78002F996A5B0028F1A6 /* VectorImageMacExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6CFB78222F996A5C0028F1A6 /* Build configuration list for PBXNativeTarget "VectorImageMacExample" */;
+			buildPhases = (
+				6CFB77FD2F996A5B0028F1A6 /* Sources */,
+				6CFB77FE2F996A5B0028F1A6 /* Frameworks */,
+				6CFB77FF2F996A5B0028F1A6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				6CFB78032F996A5B0028F1A6 /* VectorImageMacExample */,
+			);
+			name = VectorImageMacExample;
+			packageProductDependencies = (
+				AA3000000000000000000003 /* VectorImageCore */,
+			);
+			productName = VectorImageMacExample;
+			productReference = 6CFB78012F996A5B0028F1A6 /* VectorImageMacExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6CFB780D2F996A5C0028F1A6 /* VectorImageMacExampleTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6CFB78252F996A5C0028F1A6 /* Build configuration list for PBXNativeTarget "VectorImageMacExampleTests" */;
+			buildPhases = (
+				6CFB780A2F996A5C0028F1A6 /* Sources */,
+				6CFB780B2F996A5C0028F1A6 /* Frameworks */,
+				6CFB780C2F996A5C0028F1A6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6CFB78102F996A5C0028F1A6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				6CFB78112F996A5C0028F1A6 /* VectorImageMacExampleTests */,
+			);
+			name = VectorImageMacExampleTests;
+			packageProductDependencies = (
+			);
+			productName = VectorImageMacExampleTests;
+			productReference = 6CFB780E2F996A5C0028F1A6 /* VectorImageMacExampleTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		6CFB78172F996A5C0028F1A6 /* VectorImageMacExampleUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6CFB78282F996A5C0028F1A6 /* Build configuration list for PBXNativeTarget "VectorImageMacExampleUITests" */;
+			buildPhases = (
+				6CFB78142F996A5C0028F1A6 /* Sources */,
+				6CFB78152F996A5C0028F1A6 /* Frameworks */,
+				6CFB78162F996A5C0028F1A6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6CFB781A2F996A5C0028F1A6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				6CFB781B2F996A5C0028F1A6 /* VectorImageMacExampleUITests */,
+			);
+			name = VectorImageMacExampleUITests;
+			packageProductDependencies = (
+			);
+			productName = VectorImageMacExampleUITests;
+			productReference = 6CFB78182F996A5C0028F1A6 /* VectorImageMacExampleUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6CFB77F92F996A5B0028F1A6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2640;
+				LastUpgradeCheck = 2640;
+				TargetAttributes = {
+					6CFB78002F996A5B0028F1A6 = {
+						CreatedOnToolsVersion = 26.4;
+					};
+					6CFB780D2F996A5C0028F1A6 = {
+						CreatedOnToolsVersion = 26.4;
+						TestTargetID = 6CFB78002F996A5B0028F1A6;
+					};
+					6CFB78172F996A5C0028F1A6 = {
+						CreatedOnToolsVersion = 26.4;
+						TestTargetID = 6CFB78002F996A5B0028F1A6;
+					};
+				};
+			};
+			buildConfigurationList = 6CFB77FC2F996A5B0028F1A6 /* Build configuration list for PBXProject "VectorImageMacExample" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6CFB77F82F996A5B0028F1A6;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AA3000000000000000000002 /* XCLocalSwiftPackageReference "../../" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 6CFB78022F996A5B0028F1A6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6CFB78002F996A5B0028F1A6 /* VectorImageMacExample */,
+				6CFB780D2F996A5C0028F1A6 /* VectorImageMacExampleTests */,
+				6CFB78172F996A5C0028F1A6 /* VectorImageMacExampleUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6CFB77FF2F996A5B0028F1A6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6CFB780C2F996A5C0028F1A6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6CFB78162F996A5C0028F1A6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6CFB77FD2F996A5B0028F1A6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6CFB780A2F996A5C0028F1A6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6CFB78142F996A5C0028F1A6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6CFB78102F996A5C0028F1A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6CFB78002F996A5B0028F1A6 /* VectorImageMacExample */;
+			targetProxy = 6CFB780F2F996A5C0028F1A6 /* PBXContainerItemProxy */;
+		};
+		6CFB781A2F996A5C0028F1A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6CFB78002F996A5B0028F1A6 /* VectorImageMacExample */;
+			targetProxy = 6CFB78192F996A5C0028F1A6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		6CFB78202F996A5C0028F1A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = HW6VN8DV3P;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		6CFB78212F996A5C0028F1A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = HW6VN8DV3P;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		6CFB78232F996A5C0028F1A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alti.VectorImageMacExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		6CFB78242F996A5C0028F1A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alti.VectorImageMacExample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		6CFB78262F996A5C0028F1A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HW6VN8DV3P;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alti.VectorImageMacExampleTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VectorImageMacExample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VectorImageMacExample";
+			};
+			name = Debug;
+		};
+		6CFB78272F996A5C0028F1A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HW6VN8DV3P;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alti.VectorImageMacExampleTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VectorImageMacExample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/VectorImageMacExample";
+			};
+			name = Release;
+		};
+		6CFB78292F996A5C0028F1A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HW6VN8DV3P;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alti.VectorImageMacExampleUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_TARGET_NAME = VectorImageMacExample;
+			};
+			name = Debug;
+		};
+		6CFB782A2F996A5C0028F1A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HW6VN8DV3P;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alti.VectorImageMacExampleUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TEST_TARGET_NAME = VectorImageMacExample;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6CFB77FC2F996A5B0028F1A6 /* Build configuration list for PBXProject "VectorImageMacExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6CFB78202F996A5C0028F1A6 /* Debug */,
+				6CFB78212F996A5C0028F1A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6CFB78222F996A5C0028F1A6 /* Build configuration list for PBXNativeTarget "VectorImageMacExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6CFB78232F996A5C0028F1A6 /* Debug */,
+				6CFB78242F996A5C0028F1A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6CFB78252F996A5C0028F1A6 /* Build configuration list for PBXNativeTarget "VectorImageMacExampleTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6CFB78262F996A5C0028F1A6 /* Debug */,
+				6CFB78272F996A5C0028F1A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6CFB78282F996A5C0028F1A6 /* Build configuration list for PBXNativeTarget "VectorImageMacExampleUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6CFB78292F996A5C0028F1A6 /* Debug */,
+				6CFB782A2F996A5C0028F1A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AA3000000000000000000002 /* XCLocalSwiftPackageReference "../../" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA3000000000000000000003 /* VectorImageCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA3000000000000000000002 /* XCLocalSwiftPackageReference "../../" */;
+			productName = VectorImageCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 6CFB77F92F996A5B0028F1A6 /* Project object */;
+}

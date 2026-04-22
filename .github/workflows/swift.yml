@@ -1,0 +1,64 @@
+name: Swift
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+  pull_request:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  package:
+    name: Package Tests
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Validate package manifest
+        run: swift package dump-package
+
+      - name: Run package tests
+        run: swift test
+
+  ios-example:
+    name: iOS Example Build
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Build iOS example app
+        run: xcodebuild -scheme VectorImageExample -project Example/VectorImageExample/VectorImageExample.xcodeproj -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+
+  macos-example:
+    name: macOS Example Build
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Build macOS example app
+        run: xcodebuild -scheme VectorImageMacExample -project Example/VectorImageMacExample/VectorImageMacExample.xcodeproj -destination 'generic/platform=macOS' CODE_SIGNING_ALLOWED=NO build
