@@ -15,7 +15,6 @@
     <a href="#supported-svg-subset">Supported SVG Subset</a> ·
     <a href="#performance-guardrails">Performance Guardrails</a> ·
     <a href="#planned">Planned</a> ·
-    <a href="#release-plan">Release Plan</a> ·
     <a href="#package-layout">Package Layout</a> ·
     <a href="#example-apps">Example Apps</a> ·
     <a href="#testing">Testing</a>
@@ -357,17 +356,6 @@ This section tracks what is already included in `0.1.0` and what is planned on t
 - [ ] Production adoption validation in a host app
 - [ ] Decide the long-term role of `VectorImageAdvanced`
 - [ ] Confidence that the documented supported SVG subset is stable enough for long-term maintenance
-
-## Release Plan
-
-- `0.1.0`
-  First stable public cut of `VectorImageCore` with a documented supported SVG subset, example app, regression tests, async source loading, performance guardrails, and no private Apple SVG framework usage.
-- `0.2.0`
-  First expansion release, expected to focus on making `VectorImageUI` real and improving the integration surface above the core renderer.
-- later `0.x` releases
-  Additional hardening or focused feature additions can still happen before `1.0.0` if the package needs them. `0.2.0` does not need to jump directly to `1.0.0`.
-- `1.0.0`
-  Reserved for the point where the core API, supported SVG subset, and host-app adoption story are stable enough to treat the package as a long-term public interface.
 
 ## Package Layout
 
