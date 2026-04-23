@@ -10,7 +10,7 @@
 import Foundation
 
 /// A source from which SVG bytes can be loaded.
-public enum VectorImageSource: Sendable {
+public enum VectorImageSource: Sendable, Hashable {
     case data(Data)
     case fileURL(URL)
     case remoteURL(URL)

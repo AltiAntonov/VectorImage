@@ -128,8 +128,16 @@ public enum VectorImageRenderer {
             return cachedResult
         }
 
-        let data = try await loader.loadData(from: source)
-        let result = try render(svgData: data, options: options)
+        let requestKey = VectorImageInFlightRequestKey(
+            source: source,
+            options: options,
+            loaderIdentity: loader.requestIdentity
+        )
+
+        let result = try await VectorImageInFlightRequestRegistry.shared.result(for: requestKey) {
+            let data = try await loader.loadData(from: source)
+            return try render(svgData: data, options: options)
+        }
 
         if let cacheKey = cacheKey(for: source, options: options) {
             cache?.insert(result, forKey: cacheKey)
@@ -337,7 +345,7 @@ public enum VectorImageRenderer {
 }
 
 /// The result of rendering SVG data.
-public struct VectorImageRenderResult {
+public struct VectorImageRenderResult: @unchecked Sendable {
     public let image: VectorImagePlatformImage
     public let diagnostics: VectorImageDiagnostics
 

@@ -26,11 +26,13 @@
 - dependency-free SVG detection, parsing, and rasterization
 - public-SDK-safe implementation with no Apple private framework usage
 - focused `VectorImageCore` target for loading and rendering SVGs into `UIImage` or `NSImage`
+- real `VectorImageUI` target with a SwiftUI async SVG image view backed by `VectorImageCore`
 - documented supported SVG subset with diagnostics for unsupported features
 - support for local, file-based, and remote SVG loading
 - optional in-memory caching for repeated source-based renders
+- in-flight coalescing for identical source-based render requests
 - support for practical SVG fidelity features such as clip paths, group transforms, gradients, and arc commands
-- placeholder `VectorImageAdvanced` and `VectorImageUI` targets for future expansion
+- placeholder `VectorImageAdvanced` target reserved for future expansion
 - fixture-based tests for the initial SVG subset
 - included iOS and macOS example apps for manual validation
 
@@ -51,6 +53,18 @@ Then add the core product to your target:
     name: "YourApp",
     dependencies: [
         .product(name: "VectorImageCore", package: "VectorImage")
+    ]
+)
+```
+
+For SwiftUI integration, add the UI product as well:
+
+```swift
+.target(
+    name: "YourFeature",
+    dependencies: [
+        .product(name: "VectorImageCore", package: "VectorImage"),
+        .product(name: "VectorImageUI", package: "VectorImage")
     ]
 )
 ```
@@ -77,7 +91,33 @@ If you want to preflight content before rendering:
 let isSVG = VectorImageDetector.isSVG(data: data)
 ```
 
-For UI integration, prefer doing SVG parsing and rasterization off the main thread, then hand the resulting `VectorImagePlatformImage` to the UI layer.
+For SwiftUI integration, `VectorImageUI` now provides `VectorImageAsyncImage` on top of the same core renderer.
+
+```swift
+import SwiftUI
+import VectorImageUI
+
+struct LogoView: View {
+    let url: URL
+
+    var body: some View {
+        VectorImageAsyncImage(
+            url: url,
+            options: .init(size: CGSize(width: 120, height: 120))
+        ) { phase in
+            if let image = phase.image {
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else if let error = phase.error {
+                Text(error.localizedDescription)
+            } else {
+                ProgressView()
+            }
+        }
+    }
+}
+```
 
 ## API Surface
 
@@ -95,6 +135,15 @@ Current public entry points in `VectorImageCore`:
   Async rendering from a `VectorImageSource` into an image plus diagnostics.
 - `VectorImageCache`
   Optional in-memory cache for repeated source-based renders.
+
+Current public entry points in `VectorImageUI`:
+
+- `VectorImageAsyncImage`
+  SwiftUI async SVG view backed by `VectorImageCore`.
+- `VectorImageAsyncImagePhase`
+  Phase enum for loading, success, and failure states.
+- `VectorImageAsyncImageValue`
+  Successful render payload with `Image`, platform image, and diagnostics.
 
 Use the API in two layers:
 
@@ -243,9 +292,8 @@ Not currently provided as first-class package APIs:
 
 - asset-catalog lookup by image name
 - SF Symbols / `systemImage`
-- SwiftUI image views
 
-Those are intentionally left out of `0.1.0` so the core package stays focused on SVG parsing and rasterization rather than app-level resource lookup.
+Those remain intentionally outside the first-class package surface so the public API stays focused on SVG loading and rendering rather than general app resource lookup.
 
 ### `VectorImageCache`
 
@@ -265,12 +313,16 @@ let image = result.image
 
 Pass `nil` to disable caching for source-based renders when you want to inspect fetch or memory behavior directly.
 
+Source-based rendering also coalesces identical in-flight requests. If two callers ask for the same `VectorImageSource` with the same `VectorImageRasterizationOptions` and loader identity while the first render is still running, they await the same render task instead of starting duplicate network or file work. This is separate from `VectorImageCache`: coalescing prevents duplicate concurrent work, while caching stores completed render results for later calls.
+
+The coalescing key includes the loader identity, so custom `VectorImageLoader` instances with different `URLSession` policies are not merged together.
+
 ## Documentation
 
-The package now includes a DocC catalog for `VectorImageCore`.
+The package includes DocC catalogs for both public library layers.
 
-- In Xcode, open the package and build documentation for `VectorImageCore`.
-- In Swift Package Index, `.spi.yml` is configured so hosted documentation can focus on `VectorImageCore`.
+- In Xcode, open the package and build documentation for `VectorImageCore` or `VectorImageUI`.
+- In Swift Package Index, `.spi.yml` is configured so hosted documentation includes both public modules.
 
 ## Supported SVG Subset
 
@@ -342,8 +394,9 @@ This section tracks what is already included in `0.1.0` and what is planned on t
 
 ### Planned for `0.2.0`
 
-- [ ] Real `VectorImageUI` module instead of a placeholder
-- [ ] SwiftUI async image view for SVG sources
+- [x] Real `VectorImageUI` module instead of a placeholder
+- [x] SwiftUI async image view for SVG sources
+- [x] Core in-flight coalescing for identical source-based render requests
 
 ### Possible later `0.x` releases
 
@@ -364,7 +417,7 @@ This section tracks what is already included in `0.1.0` and what is planned on t
 - `VectorImageAdvanced`
   Placeholder target for richer SVG feature support in later versions.
 - `VectorImageUI`
-  Placeholder target for future SwiftUI convenience views and configuration APIs.
+  SwiftUI integration target with async SVG image loading built on `VectorImageCore`.
 
 ## Example Apps
 
@@ -378,7 +431,8 @@ The repository includes two example applications:
 Current demo coverage:
 
 - local package integration for `VectorImageCore`, `VectorImageAdvanced`, and `VectorImageUI`
-- rendered sample SVG cards using inline SVGs, bundled asset-catalog SVGs, and public remote URLs
+- iOS demo coverage for `VectorImageAsyncImage` using inline SVGs and public remote URLs
+- rendered sample SVG cards using bundled asset-catalog SVGs and public remote URLs
 - diagnostics display for unsupported SVG features that are outside the documented subset
 - startup toggle for cache behavior using `--vectorimage-disable-cache`
 

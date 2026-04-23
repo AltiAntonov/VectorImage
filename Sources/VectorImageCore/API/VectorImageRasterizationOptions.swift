@@ -10,8 +10,8 @@
 import CoreGraphics
 
 /// Options that control SVG rasterization into a bitmap image.
-public struct VectorImageRasterizationOptions: Sendable {
-    public enum ContentMode: Sendable {
+public struct VectorImageRasterizationOptions: Sendable, Hashable {
+    public enum ContentMode: Sendable, Hashable {
         case fit
         case fill
         case stretch
@@ -38,7 +38,7 @@ public struct VectorImageRasterizationOptions: Sendable {
     }
 }
 
-public struct VectorImageColor: Sendable {
+public struct VectorImageColor: Sendable, Hashable {
     public let red: CGFloat
     public let green: CGFloat
     public let blue: CGFloat

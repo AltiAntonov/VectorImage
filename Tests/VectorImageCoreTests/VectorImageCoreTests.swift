@@ -363,8 +363,10 @@ func rendersRepresentativeStandaloneFixtures() throws {
 @available(iOS 15.0, macOS 12.0, *)
 @Test("Caches repeated remote renders when cache is enabled")
 func cachesRepeatedRemoteRenders() async throws {
-    URLProtocolStub.requestCount = 0
-    URLProtocolStub.responseData = Data(
+    let url = URL(string: "https://example.com/test.svg")!
+    URLProtocolStub.requestCounts[url.absoluteString] = 0
+    URLProtocolStub.responseDelays[url.absoluteString] = 0
+    URLProtocolStub.responsePayloads[url.absoluteString] = Data(
         """
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
           <rect width="40" height="40" fill="#111111" />
@@ -377,15 +379,48 @@ func cachesRepeatedRemoteRenders() async throws {
     let session = URLSession(configuration: configuration)
     let loader = VectorImageLoader(session: session)
     let cache = VectorImageCache(countLimit: 10)
-    let source = VectorImageSource.remoteURL(URL(string: "https://example.com/test.svg")!)
+    let source = VectorImageSource.remoteURL(url)
     let options = VectorImageRasterizationOptions(size: CGSize(width: 40, height: 40))
 
     let first = try await VectorImageRenderer.render(from: source, loader: loader, options: options, cache: cache)
     let second = try await VectorImageRenderer.render(from: source, loader: loader, options: options, cache: cache)
+    let requestCount = URLProtocolStub.requestCounts[url.absoluteString] ?? -1
 
     #expect(logicalSize(of: first.image).width == 40)
     #expect(logicalSize(of: second.image).width == 40)
-    #expect(URLProtocolStub.requestCount == 1)
+    #expect(requestCount == 1)
+}
+
+@available(iOS 15.0, macOS 12.0, *)
+@Test("Coalesces concurrent identical remote renders without requiring cache")
+func coalescesConcurrentRemoteRenders() async throws {
+    let url = URL(string: "https://example.com/concurrent.svg")!
+    URLProtocolStub.requestCounts[url.absoluteString] = 0
+    URLProtocolStub.responseDelays[url.absoluteString] = 0.05
+    URLProtocolStub.responsePayloads[url.absoluteString] = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="20" fill="#0055FF" />
+        </svg>
+        """.utf8
+    )
+
+    let configuration = URLSessionConfiguration.ephemeral
+    configuration.protocolClasses = [URLProtocolStub.self]
+    let session = URLSession(configuration: configuration)
+    let loader = VectorImageLoader(session: session)
+    let source = VectorImageSource.remoteURL(url)
+    let options = VectorImageRasterizationOptions(size: CGSize(width: 48, height: 48))
+
+    async let first = VectorImageRenderer.render(from: source, loader: loader, options: options, cache: nil)
+    async let second = VectorImageRenderer.render(from: source, loader: loader, options: options, cache: nil)
+
+    let (firstResult, secondResult) = try await (first, second)
+    let requestCount = URLProtocolStub.requestCounts[url.absoluteString] ?? -1
+
+    #expect(logicalSize(of: firstResult.image).width == 48)
+    #expect(logicalSize(of: secondResult.image).width == 48)
+    #expect(requestCount == 1)
 }
 
 private func logicalSize(of image: VectorImagePlatformImage) -> CGSize {
@@ -439,8 +474,9 @@ private func cgImage(from image: VectorImagePlatformImage) -> CGImage? {
 }
 
 private final class URLProtocolStub: URLProtocol, @unchecked Sendable {
-    nonisolated(unsafe) static var requestCount = 0
-    nonisolated(unsafe) static var responseData = Data()
+    nonisolated(unsafe) static var requestCounts: [String: Int] = [:]
+    nonisolated(unsafe) static var responsePayloads: [String: Data] = [:]
+    nonisolated(unsafe) static var responseDelays: [String: TimeInterval] = [:]
 
     override class func canInit(with request: URLRequest) -> Bool {
         true
@@ -451,7 +487,11 @@ private final class URLProtocolStub: URLProtocol, @unchecked Sendable {
     }
 
     override func startLoading() {
-        Self.requestCount += 1
+        let key = request.url?.absoluteString ?? "https://example.com"
+        Self.requestCounts[key, default: 0] += 1
+        if let delay = Self.responseDelays[key], delay > 0 {
+            Thread.sleep(forTimeInterval: delay)
+        }
         let response = HTTPURLResponse(
             url: request.url ?? URL(string: "https://example.com")!,
             statusCode: 200,
@@ -459,7 +499,7 @@ private final class URLProtocolStub: URLProtocol, @unchecked Sendable {
             headerFields: ["Content-Type": "image/svg+xml"]
         )!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-        client?.urlProtocol(self, didLoad: Self.responseData)
+        client?.urlProtocol(self, didLoad: Self.responsePayloads[key] ?? Data())
         client?.urlProtocolDidFinishLoading(self)
     }
 

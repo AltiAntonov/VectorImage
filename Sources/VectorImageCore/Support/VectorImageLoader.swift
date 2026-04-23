@@ -29,4 +29,8 @@ public struct VectorImageLoader: Sendable {
             return data
         }
     }
+
+    var requestIdentity: Int {
+        ObjectIdentifier(session).hashValue
+    }
 }
