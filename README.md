@@ -7,6 +7,14 @@
     <img src="https://img.shields.io/badge/License-MIT-34C759" alt="MIT License">
   </p>
   <p>
+    <a href="https://swiftpackageindex.com/AltiAntonov/VectorImage">
+      <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FAltiAntonov%2FVectorImage%2Fbadge%3Ftype%3Dswift-versions" alt="Swift version compatibility">
+    </a>
+    <a href="https://swiftpackageindex.com/AltiAntonov/VectorImage">
+      <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FAltiAntonov%2FVectorImage%2Fbadge%3Ftype%3Dplatforms" alt="Platform compatibility">
+    </a>
+  </p>
+  <p>
     <a href="#features">Features</a> ·
     <a href="#installation">Installation</a> ·
     <a href="#quick-start">Quick Start</a> ·
