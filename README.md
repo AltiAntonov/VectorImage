@@ -50,7 +50,7 @@ Add `VectorImage` to your Swift Package Manager dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.1.0")
+    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.2.0")
 ]
 ```
 
