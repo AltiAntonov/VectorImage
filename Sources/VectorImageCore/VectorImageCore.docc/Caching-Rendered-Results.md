@@ -12,6 +12,13 @@ It helps when:
 - the same file URL is rendered repeatedly
 - a host app re-renders the same source during view refreshes or repeated loads
 
+Source-based rendering also coalesces identical in-flight requests. If multiple callers request the same source with the same rasterization options and loader identity while the first render is still running, they await the same render task instead of starting duplicate network or file work.
+
+Caching and coalescing solve different problems:
+
+- coalescing avoids duplicate concurrent work
+- caching reuses a completed render result for later calls
+
 ## Example
 
 ```swift
@@ -35,4 +42,6 @@ let image = result.image
 
 - Pass `nil` for `cache` to disable caching.
 - The cache key includes both the source identity and rasterization options.
+- In-flight coalescing remains active even when `cache` is `nil`.
+- The in-flight coalescing key includes source identity, rasterization options, and loader identity.
 - The current cache is intentionally lightweight and in-memory only.

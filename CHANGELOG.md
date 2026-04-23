@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0
+
+- Added a real `VectorImageUI` module instead of a placeholder target.
+- Added `VectorImageAsyncImage` for SwiftUI-based async SVG loading from `Data`, file URLs, and remote URLs.
+- Added `VectorImageAsyncImagePhase` and `VectorImageAsyncImageValue` so SwiftUI hosts can react to loading, success, diagnostics, and failure states.
+- Added convenience `VectorImageAsyncImage` entry points for source, data, file URL, and remote URL usage.
+- Added in-flight coalescing for identical source-based render requests to avoid duplicate concurrent fetch/render work.
+- Updated the iOS example app to exercise the new SwiftUI UI layer instead of only manual core rendering.
+- Added a dedicated DocC catalog for `VectorImageUI`.
+
 ## 0.1.0
 
 - First stable public release of `VectorImageCore`.
@@ -21,8 +31,6 @@
 
 ## Next Up
 
-- `0.2.0`
-  Focus on making `VectorImageUI` real and improving the integration surface above the core renderer.
 - later `0.x`
   Additional hardening or focused feature work can happen before `1.0.0` if the package needs it.
 - `1.0.0`
