@@ -11,7 +11,7 @@ import Foundation
 
 /// Loads raw bytes for vector image sources.
 @available(iOS 15.0, macOS 12.0, *)
-public struct VectorImageLoader: Sendable {
+public struct VectorImageLoader: Sendable, Hashable {
     private let session: URLSession
 
     public init(session: URLSession = .shared) {
@@ -32,5 +32,13 @@ public struct VectorImageLoader: Sendable {
 
     var requestIdentity: Int {
         ObjectIdentifier(session).hashValue
+    }
+
+    public static func == (lhs: VectorImageLoader, rhs: VectorImageLoader) -> Bool {
+        lhs.session === rhs.session
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(session))
     }
 }

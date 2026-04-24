@@ -34,9 +34,25 @@ let image = result.image
 let warnings = result.diagnostics.warnings
 ```
 
+When a feature needs shared policy, pass a ``VectorImageConfiguration``:
+
+```swift
+let configuration = VectorImageConfiguration(
+    cachePolicy: .enabled(countLimit: 64),
+    inFlightRequestPolicy: .coalesceIdenticalRequests
+)
+
+let result = try await VectorImageRenderer.render(
+    from: source,
+    configuration: configuration,
+    options: VectorImageRasterizationOptions(size: CGSize(width: 120, height: 120))
+)
+```
+
 ## Notes
 
 - Remote loading uses ``VectorImageLoader`` under the hood.
 - Keep the public `loader` parameter when you need dependency injection, custom `URLSession` behavior, or test control.
+- Prefer ``VectorImageConfiguration`` when a feature needs explicit cache or coalescing policy.
 - File and remote sources can benefit from ``VectorImageCache`` when you render the same source repeatedly.
 - The `.data` case is intentionally not auto-cached because raw bytes do not provide a stable external identity by default.

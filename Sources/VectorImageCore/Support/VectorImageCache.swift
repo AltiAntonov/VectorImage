@@ -10,7 +10,7 @@
 import Foundation
 
 /// A small in-memory cache keyed by string identifiers.
-public final class VectorImageCache: @unchecked Sendable {
+public final class VectorImageCache: @unchecked Sendable, Hashable {
     private let storage = NSCache<NSString, Box>()
 
     public init(countLimit: Int = 100) {
@@ -40,6 +40,14 @@ public final class VectorImageCache: @unchecked Sendable {
 
     public func removeAllImages() {
         storage.removeAllObjects()
+    }
+
+    public static func == (lhs: VectorImageCache, rhs: VectorImageCache) -> Bool {
+        lhs === rhs
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(self))
     }
 }
 

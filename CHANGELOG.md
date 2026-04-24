@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0
+
+- Added `VectorImageConfiguration` for source-based rendering policy.
+- Added `VectorImageCachePolicy` to enable or disable completed-result caching through configuration.
+- Added `VectorImageInFlightRequestPolicy` to enable or disable identical in-flight request coalescing.
+- Added configuration-based `VectorImageRenderer.render` and `renderImage` entry points.
+- Added configuration support to `VectorImageAsyncImage`.
+- Updated the example apps to use configuration-driven cache policy.
+- Added tests for configuration cache policy and coalescing policy behavior.
+
 ## 0.2.0
 
 - Added a real `VectorImageUI` module instead of a placeholder target.

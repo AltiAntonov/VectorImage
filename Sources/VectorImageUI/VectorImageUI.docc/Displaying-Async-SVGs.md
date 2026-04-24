@@ -42,8 +42,32 @@ struct RemoteLogoView: View {
 }
 ```
 
+Use configuration when SwiftUI views should share source-rendering policy:
+
+```swift
+let configuration = VectorImageConfiguration(
+    cachePolicy: .enabled(countLimit: 64),
+    inFlightRequestPolicy: .coalesceIdenticalRequests
+)
+
+VectorImageAsyncImage(
+    url: url,
+    configuration: configuration,
+    options: .init(size: CGSize(width: 160, height: 160))
+) { phase in
+    if let image = phase.image {
+        image
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+    } else {
+        ProgressView()
+    }
+}
+```
+
 ## Notes
 
 - The view uses the same rasterization options type as `VectorImageCore`.
 - Source-based caching is available by passing a ``VectorImageCache`` instance.
+- Configuration-based source rendering is available by passing a ``VectorImageConfiguration``.
 - Successful phases also expose diagnostics when the supported SVG subset ignores non-fatal features.

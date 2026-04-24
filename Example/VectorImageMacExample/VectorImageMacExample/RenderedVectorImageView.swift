@@ -109,13 +109,13 @@ struct RenderedVectorImageView: View {
             case .remoteURL(let url):
                 let result = try await VectorImageRenderer.render(
                     from: .remoteURL(url),
+                    configuration: VectorImageMacExampleRuntime.configuration,
                     options: .init(
                         size: sample.size,
                         scale: renderScale,
                         contentMode: .fit,
                         backgroundColor: sample.rasterizationBackgroundColor
-                    ),
-                    cache: VectorImageMacExampleRuntime.renderCache
+                    )
                 )
                 renderedImage = result.image
                 warnings = result.diagnostics.warnings
