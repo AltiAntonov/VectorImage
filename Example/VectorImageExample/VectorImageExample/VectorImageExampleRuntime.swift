@@ -14,4 +14,8 @@ enum VectorImageExampleRuntime {
     static let isCacheEnabled = ProcessInfo.processInfo.arguments.contains(disableCacheLaunchArgument) == false
 
     static let renderCache: VectorImageCache? = isCacheEnabled ? VectorImageCache(countLimit: 200) : nil
+
+    static let configuration = VectorImageConfiguration(
+        cachePolicy: renderCache.map(VectorImageCachePolicy.enabled) ?? .disabled
+    )
 }

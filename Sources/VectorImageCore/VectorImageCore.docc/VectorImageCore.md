@@ -12,6 +12,7 @@ Use it when you need to:
 - load SVGs from `Data`, local files, or remote URLs
 - rasterize SVG content into `UIImage` or `NSImage`
 - surface diagnostics for unsupported features
+- configure source-based loading, caching, and in-flight request behavior
 - optionally cache repeated source-based renders
 
 The module does not depend on Apple private SVG frameworks and is safe to integrate in public app or SDK code.
@@ -22,6 +23,7 @@ The module does not depend on Apple private SVG frameworks and is safe to integr
 
 - <doc:Rendering-SVGs>
 - <doc:Loading-SVG-Sources>
+- <doc:Configuring-Source-Rendering>
 - <doc:Caching-Rendered-Results>
 
 ### Core Types
@@ -30,5 +32,8 @@ The module does not depend on Apple private SVG frameworks and is safe to integr
 - ``VectorImageRenderer``
 - ``VectorImageSource``
 - ``VectorImageRasterizationOptions``
+- ``VectorImageConfiguration``
+- ``VectorImageCachePolicy``
+- ``VectorImageInFlightRequestPolicy``
 - ``VectorImageCache``
 - ``VectorImageColor``

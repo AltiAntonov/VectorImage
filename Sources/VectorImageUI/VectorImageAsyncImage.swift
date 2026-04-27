@@ -13,9 +13,8 @@ import VectorImageCore
 /// A SwiftUI view that asynchronously loads and renders SVG content from a ``VectorImageSource``.
 public struct VectorImageAsyncImage<Content: View>: View {
     private let source: VectorImageSource
-    private let loader: VectorImageLoader
+    private let configuration: VectorImageConfiguration
     private let options: VectorImageRasterizationOptions
-    private let cache: VectorImageCache?
     private let transaction: Transaction
     private let content: (VectorImageAsyncImagePhase) -> Content
 
@@ -30,10 +29,25 @@ public struct VectorImageAsyncImage<Content: View>: View {
         transaction: Transaction = .init(),
         @ViewBuilder content: @escaping (VectorImageAsyncImagePhase) -> Content
     ) {
+        self.init(
+            source: source,
+            configuration: .init(loader: loader, cachePolicy: cache.map(VectorImageCachePolicy.enabled) ?? .disabled),
+            options: options,
+            transaction: transaction,
+            content: content
+        )
+    }
+
+    public init(
+        source: VectorImageSource,
+        configuration: VectorImageConfiguration,
+        options: VectorImageRasterizationOptions = .init(),
+        transaction: Transaction = .init(),
+        @ViewBuilder content: @escaping (VectorImageAsyncImagePhase) -> Content
+    ) {
         self.source = source
-        self.loader = loader
+        self.configuration = configuration
         self.options = options
-        self.cache = cache
         self.transaction = transaction
         self.content = content
     }
@@ -54,9 +68,8 @@ public struct VectorImageAsyncImage<Content: View>: View {
         do {
             let result = try await VectorImageRenderer.render(
                 from: request.source,
-                loader: loader,
-                options: request.options,
-                cache: cache
+                configuration: request.configuration,
+                options: request.options
             )
 
             let value = VectorImageAsyncImageValue(
@@ -89,7 +102,7 @@ public struct VectorImageAsyncImage<Content: View>: View {
             )
         }
 
-        return VectorImageAsyncImageRequest(source: source, options: resolvedOptions)
+        return VectorImageAsyncImageRequest(source: source, configuration: configuration, options: resolvedOptions)
     }
 }
 
@@ -113,6 +126,22 @@ public extension VectorImageAsyncImage where Content == Image {
     }
 
     init(
+        source: VectorImageSource,
+        configuration: VectorImageConfiguration,
+        options: VectorImageRasterizationOptions = .init(),
+        transaction: Transaction = .init()
+    ) {
+        self.init(
+            source: source,
+            configuration: configuration,
+            options: options,
+            transaction: transaction
+        ) { phase in
+            phase.image ?? Image(systemName: "photo")
+        }
+    }
+
+    init(
         svgData: Data,
         options: VectorImageRasterizationOptions = .init(),
         cache: VectorImageCache? = nil,
@@ -122,6 +151,20 @@ public extension VectorImageAsyncImage where Content == Image {
             source: .data(svgData),
             options: options,
             cache: cache,
+            transaction: transaction
+        )
+    }
+
+    init(
+        svgData: Data,
+        configuration: VectorImageConfiguration,
+        options: VectorImageRasterizationOptions = .init(),
+        transaction: Transaction = .init()
+    ) {
+        self.init(
+            source: .data(svgData),
+            configuration: configuration,
+            options: options,
             transaction: transaction
         )
     }
@@ -138,6 +181,20 @@ public extension VectorImageAsyncImage where Content == Image {
             loader: loader,
             options: options,
             cache: cache,
+            transaction: transaction
+        )
+    }
+
+    init(
+        fileURL: URL,
+        configuration: VectorImageConfiguration,
+        options: VectorImageRasterizationOptions = .init(),
+        transaction: Transaction = .init()
+    ) {
+        self.init(
+            source: .fileURL(fileURL),
+            configuration: configuration,
+            options: options,
             transaction: transaction
         )
     }
@@ -161,6 +218,22 @@ public extension VectorImageAsyncImage {
     }
 
     init(
+        svgData: Data,
+        configuration: VectorImageConfiguration,
+        options: VectorImageRasterizationOptions = .init(),
+        transaction: Transaction = .init(),
+        @ViewBuilder content: @escaping (VectorImageAsyncImagePhase) -> Content
+    ) {
+        self.init(
+            source: .data(svgData),
+            configuration: configuration,
+            options: options,
+            transaction: transaction,
+            content: content
+        )
+    }
+
+    init(
         fileURL: URL,
         loader: VectorImageLoader = .init(),
         options: VectorImageRasterizationOptions = .init(),
@@ -173,6 +246,22 @@ public extension VectorImageAsyncImage {
             loader: loader,
             options: options,
             cache: cache,
+            transaction: transaction,
+            content: content
+        )
+    }
+
+    init(
+        fileURL: URL,
+        configuration: VectorImageConfiguration,
+        options: VectorImageRasterizationOptions = .init(),
+        transaction: Transaction = .init(),
+        @ViewBuilder content: @escaping (VectorImageAsyncImagePhase) -> Content
+    ) {
+        self.init(
+            source: .fileURL(fileURL),
+            configuration: configuration,
+            options: options,
             transaction: transaction,
             content: content
         )
@@ -195,9 +284,26 @@ public extension VectorImageAsyncImage {
             content: content
         )
     }
+
+    init(
+        url: URL,
+        configuration: VectorImageConfiguration,
+        options: VectorImageRasterizationOptions = .init(),
+        transaction: Transaction = .init(),
+        @ViewBuilder content: @escaping (VectorImageAsyncImagePhase) -> Content
+    ) {
+        self.init(
+            source: .remoteURL(url),
+            configuration: configuration,
+            options: options,
+            transaction: transaction,
+            content: content
+        )
+    }
 }
 
 private struct VectorImageAsyncImageRequest: Hashable {
     let source: VectorImageSource
+    let configuration: VectorImageConfiguration
     let options: VectorImageRasterizationOptions
 }

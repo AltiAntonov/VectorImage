@@ -50,7 +50,7 @@ Add `VectorImage` to your Swift Package Manager dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.2.0")
+    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.3.0")
 ]
 ```
 
@@ -141,8 +141,18 @@ Current public entry points in `VectorImageCore`:
   Convenience helper that returns only the rendered image for a `VectorImageSource`.
 - `VectorImageRenderer.render(from:loader:options:cache:)`
   Async rendering from a `VectorImageSource` into an image plus diagnostics.
+- `VectorImageRenderer.renderImage(from:configuration:options:)`
+  Convenience helper that returns only the rendered image using source-rendering configuration.
+- `VectorImageRenderer.render(from:configuration:options:)`
+  Async rendering from a `VectorImageSource` using source-rendering configuration.
 - `VectorImageCache`
   Optional in-memory cache for repeated source-based renders.
+- `VectorImageConfiguration`
+  Source-rendering configuration for loader, cache, and in-flight request policies.
+- `VectorImageCachePolicy`
+  Enables or disables completed-result caching for source-based renders.
+- `VectorImageInFlightRequestPolicy`
+  Enables or disables coalescing for identical in-flight source-based renders.
 
 Current public entry points in `VectorImageUI`:
 
@@ -231,6 +241,27 @@ let image = try await VectorImageRenderer.renderImage(
     cache: cache
 )
 ```
+
+### Configure source-based rendering
+
+```swift
+import Foundation
+import VectorImageCore
+
+let configuration = VectorImageConfiguration(
+    loader: VectorImageLoader(session: .shared),
+    cachePolicy: .enabled(countLimit: 64),
+    inFlightRequestPolicy: .coalesceIdenticalRequests
+)
+
+let result = try await VectorImageRenderer.render(
+    from: .remoteURL(URL(string: "https://example.com/logo.svg")!),
+    configuration: configuration,
+    options: .init(size: CGSize(width: 120, height: 120))
+)
+```
+
+Use `.disabled` for `cachePolicy` when the same source may return changing SVG content and you always want a fresh completed render. Use `.disabled` for `inFlightRequestPolicy` when identical concurrent requests must not share the same in-flight load/render task.
 
 Supported `VectorImageSource` cases:
 
@@ -405,6 +436,14 @@ This section tracks what is already included in `0.1.0` and what is planned on t
 - [x] Real `VectorImageUI` module instead of a placeholder
 - [x] SwiftUI async image view for SVG sources
 - [x] Core in-flight coalescing for identical source-based render requests
+
+### Planned for `0.3.0`
+
+- [x] Source-rendering configuration object
+- [x] Configurable completed-result cache policy
+- [x] Configurable in-flight request coalescing policy
+- [x] Configuration support in `VectorImageUI`
+- [x] Tests for cache and coalescing policy behavior
 
 ### Possible later `0.x` releases
 

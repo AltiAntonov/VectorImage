@@ -68,8 +68,8 @@ struct RenderedVectorImageView: View {
     private func vectorImagePhaseView(source: VectorImageSource) -> some View {
         VectorImageAsyncImage(
             source: source,
-            options: rasterizationOptions,
-            cache: VectorImageExampleRuntime.renderCache
+            configuration: VectorImageExampleRuntime.configuration,
+            options: rasterizationOptions
         ) { phase in
             VStack(alignment: .leading, spacing: 12) {
                 Group {

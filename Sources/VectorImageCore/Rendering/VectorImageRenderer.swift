@@ -104,7 +104,32 @@ public enum VectorImageRenderer {
         options: VectorImageRasterizationOptions = .init(),
         cache: VectorImageCache? = nil
     ) async throws -> VectorImagePlatformImage {
-        try await render(from: source, loader: loader, options: options, cache: cache).image
+        try await render(
+            from: source,
+            configuration: .init(loader: loader, cachePolicy: cache.map(VectorImageCachePolicy.enabled) ?? .disabled),
+            options: options
+        ).image
+    }
+
+    /// Loads and renders an SVG image using a source-rendering configuration and returns only
+    /// the rasterized image.
+    ///
+    /// This is a convenience wrapper over ``render(from:configuration:options:)`` for callers
+    /// that do not need diagnostics.
+    ///
+    /// - Parameters:
+    ///   - source: The source to load bytes from.
+    ///   - configuration: Loading, cache, and in-flight request policies.
+    ///   - options: Rasterization options such as target size and scaling mode.
+    /// - Returns: A rendered bitmap image.
+    /// - Throws: A `VectorImageError` or loading error if the source cannot be resolved or rendered.
+    @available(iOS 15.0, macOS 12.0, *)
+    public static func renderImage(
+        from source: VectorImageSource,
+        configuration: VectorImageConfiguration,
+        options: VectorImageRasterizationOptions = .init()
+    ) async throws -> VectorImagePlatformImage {
+        try await render(from: source, configuration: configuration, options: options).image
     }
 
     /// Loads and renders an SVG image from a source value.
@@ -123,20 +148,49 @@ public enum VectorImageRenderer {
         options: VectorImageRasterizationOptions = .init(),
         cache: VectorImageCache? = nil
     ) async throws -> VectorImageRenderResult {
+        try await render(
+            from: source,
+            configuration: .init(loader: loader, cachePolicy: cache.map(VectorImageCachePolicy.enabled) ?? .disabled),
+            options: options
+        )
+    }
+
+    /// Loads and renders an SVG image from a source value using a source-rendering configuration.
+    ///
+    /// - Parameters:
+    ///   - source: The source to load bytes from.
+    ///   - configuration: Loading, cache, and in-flight request policies.
+    ///   - options: Rasterization options such as target size and scaling mode.
+    /// - Returns: The rendered image and any collected diagnostics.
+    /// - Throws: A `VectorImageError` or loading error if the source cannot be resolved or rendered.
+    @available(iOS 15.0, macOS 12.0, *)
+    public static func render(
+        from source: VectorImageSource,
+        configuration: VectorImageConfiguration,
+        options: VectorImageRasterizationOptions = .init()
+    ) async throws -> VectorImageRenderResult {
+        let cache = configuration.cachePolicy.cache
         if let cacheKey = cacheKey(for: source, options: options),
            let cachedResult = cache?.renderResult(forKey: cacheKey) {
             return cachedResult
         }
 
-        let requestKey = VectorImageInFlightRequestKey(
-            source: source,
-            options: options,
-            loaderIdentity: loader.requestIdentity
-        )
-
-        let result = try await VectorImageInFlightRequestRegistry.shared.result(for: requestKey) {
-            let data = try await loader.loadData(from: source)
+        let loadAndRender: @Sendable () async throws -> VectorImageRenderResult = {
+            let data = try await configuration.loader.loadData(from: source)
             return try render(svgData: data, options: options)
+        }
+
+        let result: VectorImageRenderResult
+        switch configuration.inFlightRequestPolicy {
+        case .coalesceIdenticalRequests:
+            let requestKey = VectorImageInFlightRequestKey(
+                source: source,
+                options: options,
+                loaderIdentity: configuration.loader.requestIdentity
+            )
+            result = try await VectorImageInFlightRequestRegistry.shared.result(for: requestKey, start: loadAndRender)
+        case .disabled:
+            result = try await loadAndRender()
         }
 
         if let cacheKey = cacheKey(for: source, options: options) {
