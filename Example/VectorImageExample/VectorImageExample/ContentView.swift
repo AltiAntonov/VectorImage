@@ -7,6 +7,7 @@
 
 import SwiftUI
 import VectorImageCore
+import VectorImageUI
 
 struct ContentView: View {
     var body: some View {
@@ -31,6 +32,7 @@ struct ContentView: View {
                 endPoint: .bottomTrailing
             )
         )
+        .vectorImageConfiguration(VectorImageExampleRuntime.configuration)
     }
 
     private var hero: some View {

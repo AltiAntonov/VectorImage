@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+- Added SwiftUI environment support for shared `VectorImageConfiguration` values.
+- Added a `vectorImageConfiguration(_:)` view modifier for configuring descendant `VectorImageAsyncImage` views.
+- Added `reloadID` support to `VectorImageAsyncImage` so callers can explicitly trigger reloads.
+- Updated the iOS example app to provide configuration through the SwiftUI environment.
+- Added `VectorImageUITests` coverage for environment configuration behavior.
+
 ## 0.3.0
 
 - Added `VectorImageConfiguration` for source-based rendering policy.
