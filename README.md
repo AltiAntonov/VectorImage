@@ -40,7 +40,7 @@
 - optional in-memory caching for repeated source-based renders
 - in-flight coalescing for identical source-based render requests
 - SwiftUI environment configuration for sharing source-rendering policy across async image views
-- support for practical SVG fidelity features such as clip paths, group transforms, gradients, arc commands, and focused stylesheet rules
+- support for practical SVG fidelity features such as clip paths, group transforms, gradients, arc commands, focused stylesheet rules, and stroke presentation attributes
 - placeholder `VectorImageAdvanced` target reserved for future expansion
 - fixture-based tests for the initial SVG subset
 - included iOS and macOS example apps for manual validation
@@ -51,7 +51,7 @@ Add `VectorImage` to your Swift Package Manager dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.5.0")
+    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.6.0")
 ]
 ```
 
@@ -434,6 +434,7 @@ Currently supported:
 
 - `svg`, `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, `path`, `g`, `defs`, `clipPath`, `linearGradient`, `radialGradient`, `stop`
 - basic `fill`, `stroke`, `stroke-width`, `opacity`, `fill-opacity`, `stroke-opacity`
+- stroke presentation attributes: `stroke-linecap`, `stroke-linejoin`, `stroke-miterlimit`, `stroke-dasharray`, `stroke-dashoffset`
 - inline `style="..."`
 - focused `<style>` block rules for practical class, id, and element selectors
 - `currentColor` resolved from inherited SVG `color` attributes
@@ -527,9 +528,18 @@ This section tracks what is already included in `0.1.0` and what is planned on t
 - [x] Regression tests for stylesheet precedence and comments
 - [x] Supported-subset documentation updated for stylesheet behavior
 
+### Planned for `0.6.0`
+
+- [x] `stroke-linecap`
+- [x] `stroke-linejoin`
+- [x] `stroke-miterlimit`
+- [x] `stroke-dasharray`
+- [x] `stroke-dashoffset`
+- [x] Regression tests for parsed and rendered stroke presentation behavior
+
 ### Possible later `0.x` releases
 
-- [ ] Additional hardening releases between `0.5.0` and `1.0.0` if the package needs them
+- [ ] Additional hardening releases between `0.6.0` and `1.0.0` if the package needs them
 - [ ] Focused feature additions driven by real host-app needs
 
 ### Planned for `1.0.0`

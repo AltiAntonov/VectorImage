@@ -339,8 +339,10 @@ public enum VectorImageRenderer {
         if let strokeColor = node.style.strokeColor {
             context.setStrokeColor(strokeColor)
             context.setLineWidth(node.style.strokeWidth)
-            context.setLineJoin(.miter)
-            context.setLineCap(.butt)
+            context.setLineJoin(node.style.strokeLineJoin)
+            context.setLineCap(node.style.strokeLineCap)
+            context.setMiterLimit(node.style.strokeMiterLimit)
+            context.setLineDash(phase: node.style.strokeDashOffset, lengths: node.style.strokeDashArray)
             context.addPath(path)
             context.drawPath(using: .stroke)
         }

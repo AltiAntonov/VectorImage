@@ -135,6 +135,76 @@ func resolvesCurrentColorFromInheritedColorAttributes() throws {
     #expect(abs(components.blue - 0.6) < 0.01)
 }
 
+@Test("Parses stroke line cap, join, miter, and dash attributes")
+func parsesStrokePresentationAttributes() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+          <path d="M4 20 L20 4 L36 20" fill="none" stroke="#111111" stroke-width="4" stroke-linecap="round" stroke-linejoin="bevel" stroke-miterlimit="6" stroke-dasharray="3 2 1" stroke-dashoffset="2" />
+        </svg>
+        """.utf8
+    )
+
+    let parser = SVGParser(data: data)
+    let document = try parser.parse()
+    let style = try #require(document.nodes.first?.style)
+
+    #expect(style.strokeColor != nil)
+    #expect(style.strokeWidth == 4)
+    #expect(style.strokeLineCap == .round)
+    #expect(style.strokeLineJoin == .bevel)
+    #expect(style.strokeMiterLimit == 6)
+    #expect(style.strokeDashArray == [3, 2, 1, 3, 2, 1])
+    #expect(style.strokeDashOffset == 2)
+}
+
+@Test("Applies stylesheet stroke presentation attributes")
+func appliesStylesheetStrokePresentationAttributes() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+          <style>
+            .dashed { stroke: currentColor; stroke-width: 5; stroke-linecap: square; stroke-linejoin: round; stroke-dasharray: 4, 2; }
+          </style>
+          <g color="#336699">
+            <path class="dashed" d="M4 20 L36 20" fill="none" />
+          </g>
+        </svg>
+        """.utf8
+    )
+
+    let parser = SVGParser(data: data)
+    let document = try parser.parse()
+    let style = try #require(document.nodes.first?.style)
+
+    #expect(style.strokeColor != nil)
+    #expect(style.strokeWidth == 5)
+    #expect(style.strokeLineCap == .square)
+    #expect(style.strokeLineJoin == .round)
+    #expect(style.strokeDashArray == [4, 2])
+}
+
+@Test("Renders dashed strokes with visible gaps")
+func rendersDashedStrokesWithVisibleGaps() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="12" viewBox="0 0 40 12">
+          <path d="M2 6 L38 6" fill="none" stroke="#000000" stroke-width="4" stroke-dasharray="4 4" stroke-linecap="butt" />
+        </svg>
+        """.utf8
+    )
+
+    let result = try VectorImageRenderer.render(
+        svgData: data,
+        options: .init(size: CGSize(width: 40, height: 12), scale: 1)
+    )
+
+    let rowAlpha = try #require(alphaValues(in: result.image, row: 6))
+
+    #expect(rowAlpha.contains { $0 > 0 })
+    #expect(rowAlpha.contains { $0 == 0 })
+}
+
 @Test("Missing stroke does not default to black")
 func missingStrokeDefaultsToNone() throws {
     let data = Data(
@@ -646,6 +716,33 @@ private func nonTransparentPixelCount(in image: VectorImagePlatformImage) -> Int
     }
 
     return visiblePixels
+}
+
+private func alphaValues(in image: VectorImagePlatformImage, row: Int) -> [UInt8]? {
+    guard let cgImage = cgImage(from: image), row >= 0, row < cgImage.height else { return nil }
+
+    let width = cgImage.width
+    let height = cgImage.height
+    let bytesPerPixel = 4
+    let bytesPerRow = width * bytesPerPixel
+    var pixels = [UInt8](repeating: 0, count: height * bytesPerRow)
+
+    guard let context = CGContext(
+        data: &pixels,
+        width: width,
+        height: height,
+        bitsPerComponent: 8,
+        bytesPerRow: bytesPerRow,
+        space: CGColorSpace(name: CGColorSpace.sRGB)!,
+        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+    ) else {
+        return nil
+    }
+
+    context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+    let rowOffset = row * bytesPerRow
+    return stride(from: rowOffset + 3, to: rowOffset + bytesPerRow, by: bytesPerPixel).map { pixels[$0] }
 }
 
 private func rgbaComponents(of color: CGColor) -> (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)? {
