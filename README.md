@@ -40,7 +40,7 @@
 - optional in-memory caching for repeated source-based renders
 - in-flight coalescing for identical source-based render requests
 - SwiftUI environment configuration for sharing source-rendering policy across async image views
-- support for practical SVG fidelity features such as clip paths, group transforms, gradients, and arc commands
+- support for practical SVG fidelity features such as clip paths, group transforms, gradients, arc commands, and focused stylesheet rules
 - placeholder `VectorImageAdvanced` target reserved for future expansion
 - fixture-based tests for the initial SVG subset
 - included iOS and macOS example apps for manual validation
@@ -51,7 +51,7 @@ Add `VectorImage` to your Swift Package Manager dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.4.0")
+    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.5.0")
 ]
 ```
 
@@ -435,6 +435,8 @@ Currently supported:
 - `svg`, `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, `path`, `g`, `defs`, `clipPath`, `linearGradient`, `radialGradient`, `stop`
 - basic `fill`, `stroke`, `stroke-width`, `opacity`, `fill-opacity`, `stroke-opacity`
 - inline `style="..."`
+- focused `<style>` block rules for practical class, id, and element selectors
+- `currentColor` resolved from inherited SVG `color` attributes
 - `fill-rule="evenodd"`
 - simple shape and group transforms: `translate`, `scale`, `matrix`
 - clip-path references used by supported grouped assets
@@ -447,6 +449,7 @@ Currently not supported:
 - filters
 - `use`
 - text nodes
+- full CSS selector support
 - the full SVG specification
 
 Unsupported features should fail safely and surface diagnostics rather than crashing.
@@ -515,9 +518,18 @@ This section tracks what is already included in `0.1.0` and what is planned on t
 - [x] iOS example app using shared environment configuration
 - [x] Swift Testing coverage for `VectorImageUI` environment behavior
 
+### Planned for `0.5.0`
+
+- [x] Focused SVG `<style>` block support
+- [x] Practical class selector support for exported SVGs using `.cls-*` rules
+- [x] CSS id and element selector support for presentation attributes
+- [x] `currentColor` resolution from inherited SVG `color` attributes
+- [x] Regression tests for stylesheet precedence and comments
+- [x] Supported-subset documentation updated for stylesheet behavior
+
 ### Possible later `0.x` releases
 
-- [ ] Additional hardening releases between `0.4.0` and `1.0.0` if the package needs them
+- [ ] Additional hardening releases between `0.5.0` and `1.0.0` if the package needs them
 - [ ] Focused feature additions driven by real host-app needs
 
 ### Planned for `1.0.0`

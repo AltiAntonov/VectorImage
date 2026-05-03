@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0
+
+- Added focused support for SVG `<style>` blocks with practical class, id, and element selectors.
+- Added CSS presentation-attribute support for common exported SVG class styles such as `.cls-1 { fill: ... }`.
+- Added `currentColor` resolution from inherited SVG `color` attributes.
+- Preserved SVG style precedence so element attributes and inline `style` declarations override stylesheet rules.
+- Added regression tests for stylesheet class rules, id selectors, CSS comments, and element-attribute precedence.
+- Updated supported-subset documentation to clarify the package supports focused SVG styling, not full CSS.
+
 ## 0.4.0
 
 - Added SwiftUI environment support for shared `VectorImageConfiguration` values.

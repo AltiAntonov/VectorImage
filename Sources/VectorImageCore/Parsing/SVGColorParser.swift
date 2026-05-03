@@ -11,7 +11,12 @@ import CoreGraphics
 import Foundation
 
 enum SVGColorParser {
-    static func color(from value: String?, opacity: String?, defaultColor: CGColor? = nil) -> CGColor? {
+    static func color(
+        from value: String?,
+        opacity: String?,
+        defaultColor: CGColor? = nil,
+        currentColor: CGColor? = nil
+    ) -> CGColor? {
         guard var value = value?.trimmingCharacters(in: .whitespacesAndNewlines), !value.isEmpty else {
             return defaultColor
         }
@@ -22,6 +27,10 @@ enum SVGColorParser {
 
         value = value.lowercased()
         let alpha = parsedAlpha(opacity)
+
+        if value == "currentcolor" {
+            return color(currentColor ?? defaultColor ?? defaultBlack(), applyingAlpha: alpha)
+        }
 
         if let hexColor = hexColor(value, alpha: alpha) {
             return hexColor
@@ -108,5 +117,29 @@ enum SVGColorParser {
             colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!,
             components: [red, green, blue, alpha]
         )!
+    }
+
+    private static func color(_ color: CGColor, applyingAlpha alpha: CGFloat) -> CGColor {
+        let components = color.converted(
+            to: CGColorSpace(name: CGColorSpace.sRGB)!,
+            intent: .defaultIntent,
+            options: nil
+        )?.components ?? color.components ?? [0, 0, 0, 1]
+
+        let red: CGFloat
+        let green: CGFloat
+        let blue: CGFloat
+
+        if components.count >= 3 {
+            red = components[0]
+            green = components[1]
+            blue = components[2]
+        } else {
+            red = components[0]
+            green = components[0]
+            blue = components[0]
+        }
+
+        return cgColor(red: red, green: green, blue: blue, alpha: alpha)
     }
 }
