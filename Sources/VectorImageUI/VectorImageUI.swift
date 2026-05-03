@@ -12,5 +12,5 @@ import Foundation
 /// Describes the current role of the `VectorImageUI` target.
 public enum VectorImageUIFeatureSet {
     /// Returns a short description of the target's current public scope.
-    public static let summary = "SwiftUI integration layer with an async SVG image view backed by VectorImageCore."
+    public static let summary = "SwiftUI integration layer with async SVG image views, shared configuration, and reload control backed by VectorImageCore."
 }

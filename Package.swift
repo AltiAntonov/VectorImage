@@ -60,6 +60,11 @@ let package = Package(
                 .process("Fixtures")
             ],
             swiftSettings: .vectorImageDefaults
+        ),
+        .testTarget(
+            name: "VectorImageUITests",
+            dependencies: ["VectorImageUI"],
+            swiftSettings: .vectorImageDefaults
         )
     ]
 )

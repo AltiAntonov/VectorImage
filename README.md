@@ -39,6 +39,7 @@
 - support for local, file-based, and remote SVG loading
 - optional in-memory caching for repeated source-based renders
 - in-flight coalescing for identical source-based render requests
+- SwiftUI environment configuration for sharing source-rendering policy across async image views
 - support for practical SVG fidelity features such as clip paths, group transforms, gradients, and arc commands
 - placeholder `VectorImageAdvanced` target reserved for future expansion
 - fixture-based tests for the initial SVG subset
@@ -50,7 +51,7 @@ Add `VectorImage` to your Swift Package Manager dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.3.0")
+    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.4.0")
 ]
 ```
 
@@ -157,11 +158,15 @@ Current public entry points in `VectorImageCore`:
 Current public entry points in `VectorImageUI`:
 
 - `VectorImageAsyncImage`
-  SwiftUI async SVG view backed by `VectorImageCore`.
+  SwiftUI async SVG view backed by `VectorImageCore`. Default loader/cache initializers read `EnvironmentValues.vectorImageConfiguration`; explicit loader, cache, or configuration initializers keep using the values passed to that view.
 - `VectorImageAsyncImagePhase`
   Phase enum for loading, success, and failure states.
 - `VectorImageAsyncImageValue`
   Successful render payload with `Image`, platform image, and diagnostics.
+- `EnvironmentValues.vectorImageConfiguration`
+  Default `VectorImageConfiguration` used by descendant `VectorImageAsyncImage` views.
+- `View.vectorImageConfiguration(_:)`
+  SwiftUI modifier for setting shared source-rendering configuration.
 
 Use the API in two layers:
 
@@ -356,6 +361,64 @@ Source-based rendering also coalesces identical in-flight requests. If two calle
 
 The coalescing key includes the loader identity, so custom `VectorImageLoader` instances with different `URLSession` policies are not merged together.
 
+### SwiftUI shared configuration
+
+```swift
+import SwiftUI
+import VectorImageCore
+import VectorImageUI
+
+struct LogoListView: View {
+    let urls: [URL]
+
+    private let configuration = VectorImageConfiguration(
+        cachePolicy: .enabled(countLimit: 64),
+        inFlightRequestPolicy: .coalesceIdenticalRequests
+    )
+
+    var body: some View {
+        List(urls, id: \.self) { url in
+            VectorImageAsyncImage(
+                url: url,
+                options: .init(size: CGSize(width: 96, height: 96))
+            ) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else {
+                    ProgressView()
+                }
+            }
+        }
+        .vectorImageConfiguration(configuration)
+    }
+}
+```
+
+Use `reloadID` when the source is the same but the host app needs to force a reload, for example after a manual refresh action:
+
+```swift
+@State private var reloadID = 0
+
+VectorImageAsyncImage(
+    url: url,
+    reloadID: reloadID
+) { phase in
+    if let image = phase.image {
+        image
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+    } else {
+        ProgressView()
+    }
+}
+
+Button("Reload") {
+    reloadID += 1
+}
+```
+
 ## Documentation
 
 The package includes DocC catalogs for both public library layers.
@@ -445,9 +508,16 @@ This section tracks what is already included in `0.1.0` and what is planned on t
 - [x] Configuration support in `VectorImageUI`
 - [x] Tests for cache and coalescing policy behavior
 
+### Planned for `0.4.0`
+
+- [x] SwiftUI environment configuration for `VectorImageAsyncImage`
+- [x] Explicit reload trigger through `reloadID`
+- [x] iOS example app using shared environment configuration
+- [x] Swift Testing coverage for `VectorImageUI` environment behavior
+
 ### Possible later `0.x` releases
 
-- [ ] Additional hardening releases between `0.2.0` and `1.0.0` if the package needs them
+- [ ] Additional hardening releases between `0.4.0` and `1.0.0` if the package needs them
 - [ ] Focused feature additions driven by real host-app needs
 
 ### Planned for `1.0.0`
@@ -479,6 +549,7 @@ Current demo coverage:
 
 - local package integration for `VectorImageCore`, `VectorImageAdvanced`, and `VectorImageUI`
 - iOS demo coverage for `VectorImageAsyncImage` using inline SVGs and public remote URLs
+- iOS demo coverage for shared `VectorImageUI` environment configuration
 - rendered sample SVG cards using bundled asset-catalog SVGs and public remote URLs
 - diagnostics display for unsupported SVG features that are outside the documented subset
 - startup toggle for cache behavior using `--vectorimage-disable-cache`
