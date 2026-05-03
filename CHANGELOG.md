@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+- Added support for `stroke-linecap`, `stroke-linejoin`, `stroke-miterlimit`, `stroke-dasharray`, and `stroke-dashoffset`.
+- Added inherited and stylesheet-backed stroke presentation support for the new stroke attributes.
+- Added dashed-stroke rendering coverage to verify visible gaps are rasterized correctly.
+- Added regression tests for direct and stylesheet-provided stroke presentation attributes.
+
 ## 0.5.0
 
 - Added focused support for SVG `<style>` blocks with practical class, id, and element selectors.

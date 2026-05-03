@@ -27,6 +27,11 @@ struct SVGStyle {
     let fillGradientIdentifier: String?
     let strokeColor: CGColor?
     let strokeWidth: CGFloat
+    let strokeLineCap: CGLineCap
+    let strokeLineJoin: CGLineJoin
+    let strokeMiterLimit: CGFloat
+    let strokeDashArray: [CGFloat]
+    let strokeDashOffset: CGFloat
     let fillRule: SVGFillRule
 }
 

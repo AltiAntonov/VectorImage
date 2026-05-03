@@ -69,6 +69,11 @@ final class SVGParser: NSObject {
                     fillGradientIdentifier: node.style.fillGradientIdentifier,
                     strokeColor: node.style.strokeColor,
                     strokeWidth: node.style.strokeWidth,
+                    strokeLineCap: node.style.strokeLineCap,
+                    strokeLineJoin: node.style.strokeLineJoin,
+                    strokeMiterLimit: node.style.strokeMiterLimit,
+                    strokeDashArray: node.style.strokeDashArray,
+                    strokeDashOffset: node.style.strokeDashOffset,
                     fillRule: node.style.fillRule
                 ),
                 clipPath: node.clipPath ?? node.clipPathIdentifier.flatMap { clipPathsByID[$0] },
@@ -121,6 +126,11 @@ final class SVGParser: NSObject {
             currentColor: currentColor
         )
         let strokeWidth = parseSize(effectiveAttributes["stroke-width"]) ?? 1
+        let strokeLineCap = parseStrokeLineCap(effectiveAttributes["stroke-linecap"])
+        let strokeLineJoin = parseStrokeLineJoin(effectiveAttributes["stroke-linejoin"])
+        let strokeMiterLimit = parseSize(effectiveAttributes["stroke-miterlimit"]) ?? 10
+        let strokeDashArray = parseStrokeDashArray(effectiveAttributes["stroke-dasharray"])
+        let strokeDashOffset = parseSize(effectiveAttributes["stroke-dashoffset"]) ?? 0
         let fillRule: SVGFillRule = effectiveAttributes["fill-rule"] == "evenodd" ? .evenOdd : .nonZero
         return SVGStyle(
             fillColor: fill,
@@ -128,8 +138,55 @@ final class SVGParser: NSObject {
             fillGradientIdentifier: fillGradientIdentifier,
             strokeColor: stroke,
             strokeWidth: strokeWidth,
+            strokeLineCap: strokeLineCap,
+            strokeLineJoin: strokeLineJoin,
+            strokeMiterLimit: strokeMiterLimit,
+            strokeDashArray: strokeDashArray,
+            strokeDashOffset: strokeDashOffset,
             fillRule: fillRule
         )
+    }
+
+    private func parseStrokeLineCap(_ value: String?) -> CGLineCap {
+        switch value?.trimmingCharacters(in: .whitespacesAndNewlines) {
+        case "round":
+            .round
+        case "square":
+            .square
+        default:
+            .butt
+        }
+    }
+
+    private func parseStrokeLineJoin(_ value: String?) -> CGLineJoin {
+        switch value?.trimmingCharacters(in: .whitespacesAndNewlines) {
+        case "round":
+            .round
+        case "bevel":
+            .bevel
+        default:
+            .miter
+        }
+    }
+
+    private func parseStrokeDashArray(_ value: String?) -> [CGFloat] {
+        guard let value else { return [] }
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.isEmpty == false, trimmed != "none" else { return [] }
+
+        let numbers: [CGFloat] = trimmed
+            .split(whereSeparator: { $0 == " " || $0 == "," || $0 == "\n" || $0 == "\t" })
+            .compactMap { Double(String($0)) }
+            .map { CGFloat($0) }
+            .filter { $0 >= 0 }
+
+        guard numbers.contains(where: { $0 > 0 }) else { return [] }
+
+        if numbers.count % 2 == 1 {
+            return numbers + numbers
+        }
+
+        return numbers
     }
 
     private func resolvedFillGradientIdentifier(from attributes: [String: String]) -> String? {
@@ -177,6 +234,11 @@ final class SVGParser: NSObject {
             "stroke",
             "stroke-opacity",
             "stroke-width",
+            "stroke-linecap",
+            "stroke-linejoin",
+            "stroke-miterlimit",
+            "stroke-dasharray",
+            "stroke-dashoffset",
             "opacity",
             "fill-rule",
             "color"
