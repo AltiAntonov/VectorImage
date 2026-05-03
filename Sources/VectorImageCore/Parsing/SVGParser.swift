@@ -12,6 +12,7 @@ import Foundation
 
 final class SVGParser: NSObject {
     private let data: Data
+    private let styleSheet: SVGStyleSheet
     private var nodes: [SVGNode] = []
     private var clipPathsByID: [String: CGPath] = [:]
     private var groupClipPathReferenceStack: [String?] = [nil]
@@ -31,6 +32,7 @@ final class SVGParser: NSObject {
 
     init(data: Data) {
         self.data = data
+        self.styleSheet = SVGStyleSheet(data: data)
     }
 
     func parse() throws -> SVGDocument {
@@ -108,13 +110,15 @@ final class SVGParser: NSObject {
 
     private func style(attributes: [String: String]) -> SVGStyle {
         let effectiveAttributes = mergedAttributes(for: attributes)
+        let currentColor = SVGColorParser.color(from: effectiveAttributes["color"], opacity: nil, defaultColor: nil)
         let fillGradientIdentifier = resolvedFillGradientIdentifier(from: effectiveAttributes)
         let fillGradient = fillGradientIdentifier.flatMap { gradientsByID[$0] }
-        let fill = fillGradientIdentifier == nil ? resolvedFillColor(from: effectiveAttributes) : nil
+        let fill = fillGradientIdentifier == nil ? resolvedFillColor(from: effectiveAttributes, currentColor: currentColor) : nil
         let stroke = SVGColorParser.color(
             from: effectiveAttributes["stroke"],
             opacity: effectiveAttributes["stroke-opacity"] ?? effectiveAttributes["opacity"],
-            defaultColor: nil
+            defaultColor: nil,
+            currentColor: currentColor
         )
         let strokeWidth = parseSize(effectiveAttributes["stroke-width"]) ?? 1
         let fillRule: SVGFillRule = effectiveAttributes["fill-rule"] == "evenodd" ? .evenOdd : .nonZero
@@ -137,11 +141,12 @@ final class SVGParser: NSObject {
         return gradientID
     }
 
-    private func resolvedFillColor(from attributes: [String: String]) -> CGColor? {
+    private func resolvedFillColor(from attributes: [String: String], currentColor: CGColor?) -> CGColor? {
         return SVGColorParser.color(
             from: attributes["fill"],
             opacity: attributes["fill-opacity"] ?? attributes["opacity"],
-            defaultColor: SVGColorParser.defaultBlack()
+            defaultColor: SVGColorParser.defaultBlack(),
+            currentColor: currentColor
         )
     }
 
@@ -173,7 +178,8 @@ final class SVGParser: NSObject {
             "stroke-opacity",
             "stroke-width",
             "opacity",
-            "fill-rule"
+            "fill-rule",
+            "color"
         ]
 
         var merged = inheritedStyleAttributesStack.last ?? [:]
@@ -263,7 +269,7 @@ extension SVGParser: XMLParserDelegate {
         qualifiedName qName: String?,
         attributes attributeDict: [String: String] = [:]
     ) {
-        let attributes = SVGAttributeParser.normalizedAttributes(from: attributeDict)
+        let attributes = styleSheet.mergedAttributes(for: attributeDict, elementName: elementName)
 
         switch elementName {
         case "svg":
@@ -404,7 +410,8 @@ extension SVGParser: XMLParserDelegate {
             let offset = parseGradientOffset(attributes["offset"])
             let colorValue = attributes["stop-color"] ?? attributes["color"]
             let opacity = attributes["stop-opacity"] ?? attributes["opacity"]
-            if let color = SVGColorParser.color(from: colorValue, opacity: opacity, defaultColor: nil) {
+            let currentColor = SVGColorParser.color(from: attributes["color"], opacity: nil, defaultColor: nil)
+            if let color = SVGColorParser.color(from: colorValue, opacity: opacity, defaultColor: nil, currentColor: currentColor) {
                 currentGradientStops.append(GradientStop(offset: offset, color: color))
             }
         case "mask", "filter", "use", "text":

@@ -53,6 +53,88 @@ func rendersInlineStyleAttributes() throws {
     #expect(result.diagnostics.warnings.isEmpty)
 }
 
+@Test("Applies SVG style block class rules")
+func appliesStyleBlockClassRules() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <defs>
+            <style>
+              /* Common exported-SVG class style. */
+              .cls-1 { fill: #ffffff; }
+              .cls-2 { stroke: #111111; stroke-width: 2; fill: none; }
+            </style>
+          </defs>
+          <rect class="cls-1" x="2" y="2" width="20" height="20" />
+          <path class="cls-2" d="M4 12 L20 12" />
+        </svg>
+        """.utf8
+    )
+
+    let parser = SVGParser(data: data)
+    let document = try parser.parse()
+
+    #expect(document.nodes.count == 2)
+
+    let rectangleStyle = try #require(document.nodes.first?.style)
+    #expect(rectangleStyle.fillColor != nil)
+    #expect(rectangleStyle.strokeColor == nil)
+
+    let pathStyle = try #require(document.nodes.last?.style)
+    #expect(pathStyle.fillColor == nil)
+    #expect(pathStyle.strokeColor != nil)
+    #expect(pathStyle.strokeWidth == 2)
+}
+
+@Test("Element attributes override SVG style block rules")
+func elementAttributesOverrideStyleBlockRules() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+          <style>
+            .brand { fill: #000000; opacity: 0.25; }
+            #mark { stroke: #ff0000; stroke-width: 3; }
+          </style>
+          <rect id="mark" class="brand" x="0" y="0" width="20" height="20" fill="#ffffff" opacity="1" />
+        </svg>
+        """.utf8
+    )
+
+    let parser = SVGParser(data: data)
+    let document = try parser.parse()
+    let style = try #require(document.nodes.first?.style)
+
+    #expect(style.fillColor != nil)
+    #expect(style.strokeColor != nil)
+    #expect(style.strokeWidth == 3)
+}
+
+@Test("Resolves currentColor from inherited color attributes")
+func resolvesCurrentColorFromInheritedColorAttributes() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+          <style>
+            .mark { fill: currentColor; }
+          </style>
+          <g color="#336699">
+            <rect class="mark" x="0" y="0" width="20" height="20" />
+          </g>
+        </svg>
+        """.utf8
+    )
+
+    let parser = SVGParser(data: data)
+    let document = try parser.parse()
+    let style = try #require(document.nodes.first?.style)
+    let fillColor = try #require(style.fillColor)
+    let components = try #require(rgbaComponents(of: fillColor))
+
+    #expect(abs(components.red - 0.2) < 0.01)
+    #expect(abs(components.green - 0.4) < 0.01)
+    #expect(abs(components.blue - 0.6) < 0.01)
+}
+
 @Test("Missing stroke does not default to black")
 func missingStrokeDefaultsToNone() throws {
     let data = Data(
@@ -564,6 +646,26 @@ private func nonTransparentPixelCount(in image: VectorImagePlatformImage) -> Int
     }
 
     return visiblePixels
+}
+
+private func rgbaComponents(of color: CGColor) -> (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)? {
+    let components = color.converted(
+        to: CGColorSpace(name: CGColorSpace.sRGB)!,
+        intent: .defaultIntent,
+        options: nil
+    )?.components ?? color.components
+
+    guard let components else { return nil }
+
+    if components.count >= 4 {
+        return (components[0], components[1], components[2], components[3])
+    }
+
+    if components.count == 2 {
+        return (components[0], components[0], components[0], components[1])
+    }
+
+    return nil
 }
 
 private func cgImage(from image: VectorImagePlatformImage) -> CGImage? {
