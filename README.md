@@ -51,7 +51,7 @@ Add `VectorImage` to your Swift Package Manager dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.7.0")
+    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.8.0")
 ]
 ```
 
@@ -440,7 +440,7 @@ Currently supported:
 - `currentColor` resolved from inherited SVG `color` attributes
 - visibility controls for supported render nodes: `display="none"`, `visibility="hidden"`, `visibility="collapse"`
 - `fill-rule="evenodd"`
-- simple shape and group transforms: `translate`, `scale`, `matrix`
+- simple shape and group transforms: `translate`, `scale`, `rotate`, `skewX`, `skewY`, `matrix`
 - simple nested `svg` containers with inherited presentation attributes and `x`/`y` offsets
 - clip-path references used by supported grouped assets
 - deferred `defs` resolution for supported clip paths and gradients
@@ -547,9 +547,16 @@ This section tracks what is already included in `0.1.0` and what is planned on t
 - [x] Simple nested `svg` container support with `x`/`y` offsets
 - [x] Regression tests for hidden elements, hidden groups, root inheritance, and nested containers
 
+### Planned for `0.8.0`
+
+- [x] `rotate(angle)` transform support
+- [x] `rotate(angle cx cy)` transform support
+- [x] `skewX(angle)` and `skewY(angle)` transform support
+- [x] Regression tests for the new transform geometry
+
 ### Possible later `0.x` releases
 
-- [ ] Additional hardening releases between `0.7.0` and `1.0.0` if the package needs them
+- [ ] Additional hardening releases between `0.8.0` and `1.0.0` if the package needs them
 - [ ] Focused feature additions driven by real host-app needs
 
 ### Planned for `1.0.0`

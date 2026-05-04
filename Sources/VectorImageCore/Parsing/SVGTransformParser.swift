@@ -30,6 +30,30 @@ enum SVGTransformParser {
                 let sx = parameters[safe: 0] ?? 1
                 let sy = parameters[safe: 1] ?? sx
                 nextTransform = .init(scaleX: sx, y: sy)
+            case "rotate":
+                guard let angle = parameters[safe: 0] else { continue }
+                let radians = radians(fromDegrees: angle)
+                let rotation = CGAffineTransform(rotationAngle: radians)
+                if let cx = parameters[safe: 1], let cy = parameters[safe: 2] {
+                    let cosine = cos(radians)
+                    let sine = sin(radians)
+                    nextTransform = CGAffineTransform(
+                        a: cosine,
+                        b: sine,
+                        c: -sine,
+                        d: cosine,
+                        tx: cx - (cx * cosine) + (cy * sine),
+                        ty: cy - (cx * sine) - (cy * cosine)
+                    )
+                } else {
+                    nextTransform = rotation
+                }
+            case "skewX":
+                guard let angle = parameters[safe: 0] else { continue }
+                nextTransform = CGAffineTransform(a: 1, b: 0, c: tan(radians(fromDegrees: angle)), d: 1, tx: 0, ty: 0)
+            case "skewY":
+                guard let angle = parameters[safe: 0] else { continue }
+                nextTransform = CGAffineTransform(a: 1, b: tan(radians(fromDegrees: angle)), c: 0, d: 1, tx: 0, ty: 0)
             case "matrix":
                 guard parameters.count == 6 else { continue }
                 nextTransform = CGAffineTransform(
@@ -50,6 +74,10 @@ enum SVGTransformParser {
         }
 
         return matchedAny ? transform : nil
+    }
+
+    private static func radians(fromDegrees degrees: CGFloat) -> CGFloat {
+        degrees * .pi / 180
     }
 
     private static func parseParameters(_ input: String) -> [CGFloat] {

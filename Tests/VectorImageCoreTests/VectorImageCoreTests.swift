@@ -535,6 +535,38 @@ func appliesTransformListsInDocumentOrder() throws {
     #expect(abs(radiusPoint.y - 81.5888) < 0.0001)
 }
 
+@Test("Parses rotate transforms around origin")
+func parsesRotateTransformsAroundOrigin() throws {
+    let transform = try #require(SVGTransformParser.parse("rotate(90)"))
+    let point = CGPoint(x: 1, y: 0).applying(transform)
+
+    #expect(abs(point.x) < 0.0001)
+    #expect(abs(point.y - 1) < 0.0001)
+}
+
+@Test("Parses rotate transforms around explicit center")
+func parsesRotateTransformsAroundExplicitCenter() throws {
+    let transform = try #require(SVGTransformParser.parse("rotate(90 10 5)"))
+    let point = CGPoint(x: 10, y: 6).applying(transform)
+
+    #expect(abs(point.x - 9) < 0.0001)
+    #expect(abs(point.y - 5) < 0.0001)
+}
+
+@Test("Parses skew transforms")
+func parsesSkewTransforms() throws {
+    let skewX = try #require(SVGTransformParser.parse("skewX(45)"))
+    let skewY = try #require(SVGTransformParser.parse("skewY(45)"))
+
+    let xPoint = CGPoint(x: 0, y: 10).applying(skewX)
+    let yPoint = CGPoint(x: 10, y: 0).applying(skewY)
+
+    #expect(abs(xPoint.x - 10) < 0.0001)
+    #expect(abs(xPoint.y - 10) < 0.0001)
+    #expect(abs(yPoint.x - 10) < 0.0001)
+    #expect(abs(yPoint.y - 10) < 0.0001)
+}
+
 @Test("Collects diagnostics for unsupported elements")
 func reportsUnsupportedElements() throws {
     let data = Data(
