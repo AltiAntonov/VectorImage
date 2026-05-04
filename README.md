@@ -40,7 +40,7 @@
 - optional in-memory caching for repeated source-based renders
 - in-flight coalescing for identical source-based render requests
 - SwiftUI environment configuration for sharing source-rendering policy across async image views
-- support for practical SVG fidelity features such as clip paths, group transforms, gradients, arc commands, focused stylesheet rules, and stroke presentation attributes
+- support for practical SVG fidelity features such as clip paths, group transforms, simple nested SVG containers, gradients, arc commands, focused stylesheet rules, visibility handling, and stroke presentation attributes
 - placeholder `VectorImageAdvanced` target reserved for future expansion
 - fixture-based tests for the initial SVG subset
 - included iOS and macOS example apps for manual validation
@@ -51,7 +51,7 @@ Add `VectorImage` to your Swift Package Manager dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.6.0")
+    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.7.0")
 ]
 ```
 
@@ -438,8 +438,10 @@ Currently supported:
 - inline `style="..."`
 - focused `<style>` block rules for practical class, id, and element selectors
 - `currentColor` resolved from inherited SVG `color` attributes
+- visibility controls for supported render nodes: `display="none"`, `visibility="hidden"`, `visibility="collapse"`
 - `fill-rule="evenodd"`
 - simple shape and group transforms: `translate`, `scale`, `matrix`
+- simple nested `svg` containers with inherited presentation attributes and `x`/`y` offsets
 - clip-path references used by supported grouped assets
 - deferred `defs` resolution for supported clip paths and gradients
 - basic linear and radial gradient fills used by the supported subset
@@ -537,9 +539,17 @@ This section tracks what is already included in `0.1.0` and what is planned on t
 - [x] `stroke-dashoffset`
 - [x] Regression tests for parsed and rendered stroke presentation behavior
 
+### Planned for `0.7.0`
+
+- [x] Root `svg` presentation-attribute inheritance
+- [x] `display="none"` and stylesheet-backed hidden-node handling
+- [x] `visibility="hidden"` and `visibility="collapse"` handling for supported nodes
+- [x] Simple nested `svg` container support with `x`/`y` offsets
+- [x] Regression tests for hidden elements, hidden groups, root inheritance, and nested containers
+
 ### Possible later `0.x` releases
 
-- [ ] Additional hardening releases between `0.6.0` and `1.0.0` if the package needs them
+- [ ] Additional hardening releases between `0.7.0` and `1.0.0` if the package needs them
 - [ ] Focused feature additions driven by real host-app needs
 
 ### Planned for `1.0.0`

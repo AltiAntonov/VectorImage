@@ -16,6 +16,7 @@ Use it when you need to:
 - optionally cache repeated source-based renders
 - render practical exported-SVG styles, including inline styles and focused class/id/element rules from `<style>` blocks
 - render common stroke presentation attributes such as line caps, joins, miter limits, and dashes
+- handle supported hidden-node attributes and simple nested `svg` containers
 
 The module does not depend on Apple private SVG frameworks and is safe to integrate in public app or SDK code. It supports a focused SVG subset and does not aim to be a browser-grade SVG/CSS engine.
 

@@ -25,6 +25,7 @@ final class SVGParser: NSObject {
     private(set) var diagnostics = VectorImageDiagnostics()
     private var parsingError: (any Error)?
     private var isInsideDefinitions = false
+    private var svgElementDepth = 0
     private var currentClipPathDefinitionID: String?
     private var currentGradientDefinitionKind: GradientDefinitionKind?
     private var currentGradientDefinitionID: String?
@@ -208,6 +209,8 @@ final class SVGParser: NSObject {
     }
 
     private func appendNode(path: CGPath, attributes: [String: String]) {
+        guard shouldRender(attributes: attributes) else { return }
+
         let transformedPath = transformed(path: path, attributes: attributes)
         nodes.append(
             SVGNode(
@@ -217,6 +220,14 @@ final class SVGParser: NSObject {
                 clipPathIdentifier: resolvedClipPathReference(from: attributes)
             )
         )
+    }
+
+    private func shouldRender(attributes: [String: String]) -> Bool {
+        let effectiveAttributes = mergedAttributes(for: attributes)
+        let display = effectiveAttributes["display"]?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let visibility = effectiveAttributes["visibility"]?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return display != "none" && visibility != "hidden" && visibility != "collapse"
     }
 
     private func mergedAttributes(for attributes: [String: String]) -> [String: String] {
@@ -241,7 +252,9 @@ final class SVGParser: NSObject {
             "stroke-dashoffset",
             "opacity",
             "fill-rule",
-            "color"
+            "color",
+            "display",
+            "visibility"
         ]
 
         var merged = inheritedStyleAttributesStack.last ?? [:]
@@ -258,6 +271,28 @@ final class SVGParser: NSObject {
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
         guard trimmed.hasPrefix("url(#"), trimmed.hasSuffix(")") else { return nil }
         return String(trimmed.dropFirst(5).dropLast())
+    }
+
+    private func pushContainer(attributes: [String: String], offset: CGAffineTransform = .identity) {
+        groupClipPathReferenceStack.append(resolvedClipPathReference(from: attributes))
+
+        let parentTransform = groupTransformStack.last ?? .identity
+        let localTransform = SVGTransformParser.parse(attributes["transform"]) ?? .identity
+        groupTransformStack.append(parentTransform.concatenating(offset).concatenating(localTransform))
+
+        inheritedStyleAttributesStack.append(inheritableStyleAttributes(from: attributes))
+    }
+
+    private func popContainer() {
+        if groupClipPathReferenceStack.count > 1 {
+            groupClipPathReferenceStack.removeLast()
+        }
+        if groupTransformStack.count > 1 {
+            groupTransformStack.removeLast()
+        }
+        if inheritedStyleAttributesStack.count > 1 {
+            inheritedStyleAttributesStack.removeLast()
+        }
     }
 
     private func paintServerReference(from value: String?) -> String? {
@@ -335,9 +370,19 @@ extension SVGParser: XMLParserDelegate {
 
         switch elementName {
         case "svg":
-            canvasWidth = parseSize(attributes["width"])
-            canvasHeight = parseSize(attributes["height"])
-            viewBox = parseViewBox(attributes["viewBox"])
+            if svgElementDepth == 0 {
+                canvasWidth = parseSize(attributes["width"])
+                canvasHeight = parseSize(attributes["height"])
+                viewBox = parseViewBox(attributes["viewBox"])
+                pushContainer(attributes: attributes)
+            } else {
+                let offset = CGAffineTransform(
+                    translationX: parseSize(attributes["x"]) ?? 0,
+                    y: parseSize(attributes["y"]) ?? 0
+                )
+                pushContainer(attributes: attributes, offset: offset)
+            }
+            svgElementDepth += 1
         case "rect":
             let x = parseSize(attributes["x"]) ?? 0
             let y = parseSize(attributes["y"]) ?? 0
@@ -437,11 +482,7 @@ extension SVGParser: XMLParserDelegate {
                 diagnostics.append("Invalid path data ignored.")
             }
         case "g":
-            groupClipPathReferenceStack.append(resolvedClipPathReference(from: attributes))
-            let parentTransform = groupTransformStack.last ?? .identity
-            let localTransform = SVGTransformParser.parse(attributes["transform"]) ?? .identity
-            groupTransformStack.append(parentTransform.concatenating(localTransform))
-            inheritedStyleAttributesStack.append(inheritableStyleAttributes(from: attributes))
+            pushContainer(attributes: attributes)
         case "defs":
             isInsideDefinitions = true
         case "clipPath":
@@ -490,16 +531,11 @@ extension SVGParser: XMLParserDelegate {
         qualifiedName qName: String?
     ) {
         switch elementName {
+        case "svg":
+            popContainer()
+            svgElementDepth = max(0, svgElementDepth - 1)
         case "g":
-            if groupClipPathReferenceStack.count > 1 {
-                groupClipPathReferenceStack.removeLast()
-            }
-            if groupTransformStack.count > 1 {
-                groupTransformStack.removeLast()
-            }
-            if inheritedStyleAttributesStack.count > 1 {
-                inheritedStyleAttributesStack.removeLast()
-            }
+            popContainer()
         case "clipPath":
             currentClipPathDefinitionID = nil
         case "linearGradient", "radialGradient":
