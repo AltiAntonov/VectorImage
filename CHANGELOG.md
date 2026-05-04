@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0
+
+- Added root `svg` presentation-attribute inheritance for supported render attributes.
+- Added `display="none"` handling for supported SVG nodes, including values supplied by focused stylesheet rules.
+- Added `visibility="hidden"` and `visibility="collapse"` handling for supported nodes and containers.
+- Added simple nested `svg` container support with inherited presentation attributes and `x`/`y` offsets.
+- Added regression tests for hidden elements, hidden groups, stylesheet-backed hiding, root inheritance, and nested containers.
+
 ## 0.6.0
 
 - Added support for `stroke-linecap`, `stroke-linejoin`, `stroke-miterlimit`, `stroke-dasharray`, and `stroke-dashoffset`.

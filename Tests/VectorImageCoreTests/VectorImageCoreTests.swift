@@ -300,6 +300,120 @@ func appliesGroupTransforms() throws {
     #expect(boundingBox.height == 10)
 }
 
+@Test("Inherits root SVG presentation attributes")
+func inheritsRootSVGPresentationAttributes() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="#336699">
+          <rect x="0" y="0" width="20" height="20" />
+        </svg>
+        """.utf8
+    )
+
+    let parser = SVGParser(data: data)
+    let document = try parser.parse()
+    let style = try #require(document.nodes.first?.style)
+    let fillColor = try #require(style.fillColor)
+    let components = try #require(rgbaComponents(of: fillColor))
+
+    #expect(abs(components.red - 0.2) < 0.01)
+    #expect(abs(components.green - 0.4) < 0.01)
+    #expect(abs(components.blue - 0.6) < 0.01)
+}
+
+@Test("Skips elements hidden with display none")
+func skipsElementsHiddenWithDisplayNone() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <rect display="none" x="0" y="0" width="24" height="24" fill="#FF0000" />
+          <rect x="4" y="4" width="16" height="16" fill="#00FF00" />
+        </svg>
+        """.utf8
+    )
+
+    let parser = SVGParser(data: data)
+    let document = try parser.parse()
+    let boundingBox = try #require(document.nodes.first?.path.boundingBoxOfPath)
+
+    #expect(document.nodes.count == 1)
+    #expect(boundingBox.origin.x == 4)
+    #expect(boundingBox.origin.y == 4)
+    #expect(boundingBox.width == 16)
+    #expect(boundingBox.height == 16)
+}
+
+@Test("Skips children hidden by group visibility")
+func skipsChildrenHiddenByGroupVisibility() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <g visibility="hidden">
+            <rect x="0" y="0" width="24" height="24" fill="#FF0000" />
+          </g>
+          <circle cx="12" cy="12" r="4" fill="#0000FF" />
+        </svg>
+        """.utf8
+    )
+
+    let parser = SVGParser(data: data)
+    let document = try parser.parse()
+    let boundingBox = try #require(document.nodes.first?.path.boundingBoxOfPath)
+
+    #expect(document.nodes.count == 1)
+    #expect(boundingBox.origin.x == 8)
+    #expect(boundingBox.origin.y == 8)
+    #expect(boundingBox.width == 8)
+    #expect(boundingBox.height == 8)
+}
+
+@Test("Applies style block display none rules")
+func appliesStyleBlockDisplayNoneRules() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <style>
+            .hidden { display: none; }
+          </style>
+          <rect class="hidden" x="0" y="0" width="24" height="24" fill="#FF0000" />
+          <rect x="6" y="6" width="12" height="12" fill="#00FF00" />
+        </svg>
+        """.utf8
+    )
+
+    let parser = SVGParser(data: data)
+    let document = try parser.parse()
+    let boundingBox = try #require(document.nodes.first?.path.boundingBoxOfPath)
+
+    #expect(document.nodes.count == 1)
+    #expect(boundingBox.origin.x == 6)
+    #expect(boundingBox.origin.y == 6)
+    #expect(boundingBox.width == 12)
+    #expect(boundingBox.height == 12)
+}
+
+@Test("Applies simple nested SVG offsets")
+func appliesSimpleNestedSVGOffsets() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+          <svg x="10" y="8">
+            <rect x="0" y="0" width="12" height="6" fill="#000000" />
+          </svg>
+        </svg>
+        """.utf8
+    )
+
+    let parser = SVGParser(data: data)
+    let document = try parser.parse()
+    let boundingBox = try #require(document.nodes.first?.path.boundingBoxOfPath)
+
+    #expect(boundingBox.origin.x == 10)
+    #expect(boundingBox.origin.y == 8)
+    #expect(boundingBox.width == 12)
+    #expect(boundingBox.height == 6)
+}
+
 @Test("Parses smooth cubic path commands")
 func parsesSmoothCubicCommands() throws {
     let data = Data(
