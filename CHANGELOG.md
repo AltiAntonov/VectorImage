@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0
+
+- Added SVG `rotate(...)` transform support, including rotation around an explicit center point.
+- Added SVG `skewX(...)` and `skewY(...)` transform support.
+- Added regression tests for origin rotation, centered rotation, and skew transform geometry.
+
 ## 0.7.0
 
 - Added root `svg` presentation-attribute inheritance for supported render attributes.
