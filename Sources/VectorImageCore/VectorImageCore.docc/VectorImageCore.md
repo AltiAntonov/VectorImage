@@ -29,6 +29,7 @@ The module does not depend on Apple private SVG frameworks and is safe to integr
 - <doc:Loading-SVG-Sources>
 - <doc:Configuring-Source-Rendering>
 - <doc:Caching-Rendered-Results>
+- <doc:Known-Limitations>
 
 ### Core Types
 

@@ -18,7 +18,7 @@ public enum VectorImageDetector {
             return false
         }
 
-        return text.contains("<svg") || text.hasPrefix("<?xml")
+        return text.range(of: #"<\s*svg(\s|>|/)"#, options: .regularExpression) != nil
     }
 
     /// Returns `true` when the bytes or URL hint appear to describe SVG content.
