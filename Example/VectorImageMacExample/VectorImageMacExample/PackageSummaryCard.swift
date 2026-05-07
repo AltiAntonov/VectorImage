@@ -21,12 +21,12 @@ struct PackageSummaryCard: View {
 
             summaryRow(
                 title: "VectorImageAdvanced",
-                description: "Placeholder target. Not needed for this macOS validation app."
+                description: "Reserved for future higher-level SVG features beyond the focused Core renderer."
             )
 
             summaryRow(
                 title: "VectorImageUI",
-                description: "Placeholder target. UI convenience APIs are planned separately from the core renderer."
+                description: "SwiftUI integration layer with async SVG image views, shared configuration, and reload control backed by VectorImageCore."
             )
         }
         .padding(22)

@@ -13,5 +13,5 @@ import VectorImageCore
 /// Placeholder namespace for future advanced SVG support.
 public enum VectorImageAdvancedFeatureSet {
     /// Returns a short description of the target's intended future role.
-    public static let summary = "Reserved for richer SVG features such as transforms, gradients, and broader style support."
+    public static let summary = "Reserved for future higher-level SVG features beyond the focused Core renderer."
 }

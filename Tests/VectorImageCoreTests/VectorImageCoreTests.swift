@@ -21,6 +21,20 @@ func rejectsNonSVGData() {
     #expect(VectorImageDetector.isSVG(data: data) == false)
 }
 
+@Test("Rejects non-SVG XML data")
+func rejectsNonSVGXMLData() {
+    let data = Data(
+        """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <document>
+          <title>Not SVG</title>
+        </document>
+        """.utf8
+    )
+
+    #expect(VectorImageDetector.isSVG(data: data) == false)
+}
+
 @Test("Renders a simple rectangle fixture")
 func rendersRectangleFixture() throws {
     let fixtureURL = try #require(Bundle.module.url(forResource: "simple-rect", withExtension: "svg"))

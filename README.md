@@ -21,6 +21,7 @@
     <a href="#api-surface">API Surface</a> ·
     <a href="#documentation">Documentation</a> ·
     <a href="#supported-svg-subset">Supported SVG Subset</a> ·
+    <a href="#known-limitations">Known Limitations</a> ·
     <a href="#performance-guardrails">Performance Guardrails</a> ·
     <a href="#planned">Planned</a> ·
     <a href="#package-layout">Package Layout</a> ·
@@ -51,7 +52,7 @@ Add `VectorImage` to your Swift Package Manager dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.8.0")
+    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "0.9.0")
 ]
 ```
 
@@ -452,10 +453,27 @@ Currently not supported:
 - filters
 - `use`
 - text nodes
+- embedded raster images
+- external CSS stylesheets
+- percentage-based layout and viewport units beyond the simple values already covered by tests
+- advanced nested `svg` viewport scaling and clipping
 - full CSS selector support
 - the full SVG specification
 
 Unsupported features should fail safely and surface diagnostics rather than crashing.
+
+## Known Limitations
+
+`VectorImageCore` is a focused renderer, not a browser SVG engine. The supported subset is intentionally limited to keep the package dependency-free, public-SDK-safe, and predictable for app integration.
+
+Important limitations before `1.0.0`:
+
+- SVG detection requires an actual `<svg>` tag. XML declarations alone are not treated as SVG.
+- `VectorImageSource.data` is not cached automatically because raw bytes do not provide a stable external identity.
+- Remote loading uses `URLSession`; host apps remain responsible for network entitlements, app sandbox settings, and custom HTTP policy.
+- The renderer does not execute scripts, load external resources, or resolve external stylesheets.
+- Text, masks, filters, `use`, embedded raster images, and full CSS layout are outside the supported subset.
+- `VectorImageAdvanced` is reserved for future higher-level behavior and should not be treated as a production feature surface yet.
 
 ## Performance Guardrails
 
@@ -554,10 +572,12 @@ This section tracks what is already included in `0.1.0` and what is planned on t
 - [x] `skewX(angle)` and `skewY(angle)` transform support
 - [x] Regression tests for the new transform geometry
 
-### Possible later `0.x` releases
+### Included in `0.9.0`
 
-- [ ] Additional hardening releases between `0.8.0` and `1.0.0` if the package needs them
-- [ ] Focused feature additions driven by real host-app needs
+- [x] Senior pre-1.0 API, docs, examples, concurrency, and test review
+- [x] SVG detector tightened so XML alone is not accepted as SVG
+- [x] Known limitations documented in README and DocC
+- [x] Stale example-app text and generated test placeholders cleaned up
 
 ### Planned for `1.0.0`
 

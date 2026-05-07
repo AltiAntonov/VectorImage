@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.0
+
+- Tightened SVG detection so XML documents are only accepted when they contain an actual SVG tag.
+- Added regression coverage for non-SVG XML payloads.
+- Added clearer known-limitations documentation ahead of the `1.0.0` API freeze.
+- Cleaned stale example-app target descriptions and generated test placeholders.
+
 ## 0.8.0
 
 - Added SVG `rotate(...)` transform support, including rotation around an explicit center point.
@@ -79,7 +86,5 @@
 
 ## Next Up
 
-- later `0.x`
-  Additional hardening or focused feature work can happen before `1.0.0` if the package needs it.
 - `1.0.0`
-  Reserved for the point where the public API and supported SVG subset are stable enough for long-term maintenance.
+  Reserved for the public API and supported SVG subset stability point.
