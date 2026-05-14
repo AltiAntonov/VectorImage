@@ -8,4 +8,5 @@ builder:
   configs:
     - documentation_targets:
         - VectorImageCore
+        - VectorImageAdvanced
         - VectorImageUI

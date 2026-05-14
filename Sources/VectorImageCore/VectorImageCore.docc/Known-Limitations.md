@@ -14,4 +14,4 @@ Important limitations:
 - External resources are not loaded. This includes scripts, external stylesheets, linked images, and remote references inside SVG payloads.
 - Text, masks, filters, `use`, embedded raster images, full CSS layout, and full browser-grade SVG behavior are outside the supported subset.
 - Nested `svg` support is intentionally simple and currently covers inherited presentation attributes plus `x`/`y` offsets, not full nested viewport layout.
-- `VectorImageAdvanced` is reserved for future higher-level behavior and should not be treated as a production feature surface yet.
+- `VectorImageAdvanced` validates and forwards SVG data in `1.0.0`; richer compatibility passes are intentionally left for later non-breaking releases.
