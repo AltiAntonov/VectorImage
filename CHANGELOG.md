@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0
+
+- Stabilized the public `VectorImageCore` and baseline `VectorImageUI` API surface for the supported SVG subset.
+- Defined `VectorImageAdvanced` as an optional preprocessing and compatibility layer that prepares SVG input for `VectorImageCore`.
+- Added `VectorImageAdvancedProcessor` and `VectorImageAdvancedResult` as the initial Advanced API shape.
+- Added `VectorImageAdvancedTests` coverage for valid SVG pass-through processing, empty data rejection, and non-SVG rejection.
+- Updated README and DocC wording for the 1.0 package layout and Advanced module role.
+
 ## 0.9.0
 
 - Tightened SVG detection so XML documents are only accepted when they contain an actual SVG tag.
@@ -86,5 +94,5 @@
 
 ## Next Up
 
-- `1.0.0`
-  Reserved for the public API and supported SVG subset stability point.
+- post-`1.0.0`
+  Focused non-breaking improvements to `VectorImageAdvanced`, `VectorImageUI`, diagnostics, and fixture coverage.

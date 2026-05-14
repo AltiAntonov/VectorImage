@@ -62,6 +62,11 @@ let package = Package(
             swiftSettings: .vectorImageDefaults
         ),
         .testTarget(
+            name: "VectorImageAdvancedTests",
+            dependencies: ["VectorImageAdvanced"],
+            swiftSettings: .vectorImageDefaults
+        ),
+        .testTarget(
             name: "VectorImageUITests",
             dependencies: ["VectorImageUI"],
             swiftSettings: .vectorImageDefaults
