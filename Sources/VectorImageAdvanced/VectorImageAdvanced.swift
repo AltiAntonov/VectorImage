@@ -37,11 +37,9 @@ public struct VectorImageAdvancedResult: Equatable, Sendable {
 
 /// Prepares SVG data for rendering by `VectorImageCore`.
 ///
-/// The `1.0.0` implementation intentionally validates and forwards SVG bytes without
-/// changing them. Future minor releases can add deterministic compatibility passes
-/// while preserving this result shape.
+/// The processor applies conservative, deterministic cleanup before handing bytes to Core.
 public enum VectorImageAdvancedProcessor {
-    /// Validates SVG data and returns the bytes that should be rendered by `VectorImageCore`.
+    /// Validates and prepares SVG data before rendering through `VectorImageCore`.
     ///
     /// - Parameter svgData: Raw SVG bytes.
     /// - Returns: A result containing SVG bytes and preprocessing diagnostics.
@@ -56,6 +54,58 @@ public enum VectorImageAdvancedProcessor {
             throw VectorImageError.notSVG
         }
 
-        return VectorImageAdvancedResult(svgData: svgData)
+        guard let svgText = String(data: svgData, encoding: .utf8) else {
+            throw VectorImageError.invalidUTF8
+        }
+
+        let cleanup = SVGCleanupProcessor.process(svgText)
+
+        guard let processedData = cleanup.svgText.data(using: .utf8) else {
+            throw VectorImageError.invalidUTF8
+        }
+
+        return VectorImageAdvancedResult(
+            svgData: processedData,
+            diagnostics: VectorImageDiagnostics(warnings: cleanup.warnings)
+        )
+    }
+
+    /// Preprocesses and renders SVG data through `VectorImageCore`.
+    ///
+    /// - Parameters:
+    ///   - svgData: Raw SVG bytes.
+    ///   - options: Rasterization options such as target size and scaling mode.
+    /// - Returns: The rendered image and combined preprocessing/rendering diagnostics.
+    /// - Throws: A `VectorImageError` if preprocessing or rendering fails.
+    public static func render(
+        svgData: Data,
+        options: VectorImageRasterizationOptions = .init()
+    ) throws -> VectorImageRenderResult {
+        let processed = try process(svgData: svgData)
+        let rendered = try VectorImageRenderer.render(svgData: processed.svgData, options: options)
+
+        return VectorImageRenderResult(
+            image: rendered.image,
+            diagnostics: VectorImageDiagnostics(
+                warnings: processed.diagnostics.warnings + rendered.diagnostics.warnings
+            )
+        )
+    }
+
+    /// Preprocesses and renders SVG data through `VectorImageCore`, returning only the image.
+    ///
+    /// This is a convenience wrapper over ``render(svgData:options:)`` for callers that do not
+    /// need diagnostics.
+    ///
+    /// - Parameters:
+    ///   - svgData: Raw SVG bytes.
+    ///   - options: Rasterization options such as target size and scaling mode.
+    /// - Returns: A rendered bitmap image.
+    /// - Throws: A `VectorImageError` if preprocessing or rendering fails.
+    public static func renderImage(
+        svgData: Data,
+        options: VectorImageRasterizationOptions = .init()
+    ) throws -> VectorImagePlatformImage {
+        try render(svgData: svgData, options: options).image
     }
 }
