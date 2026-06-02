@@ -52,7 +52,7 @@ Add `VectorImage` to your Swift Package Manager dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "1.0.0")
+    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "1.1.0")
 ]
 ```
 
@@ -183,7 +183,11 @@ Current public entry points in `VectorImageUI`:
 Current public entry points in `VectorImageAdvanced`:
 
 - `VectorImageAdvancedProcessor.process(svgData:)`
-  Validates SVG bytes and returns the data that should be rendered by `VectorImageCore`.
+  Validates and conservatively cleans SVG bytes before rendering with `VectorImageCore`.
+- `VectorImageAdvancedProcessor.render(svgData:options:)`
+  Preprocesses SVG bytes, renders through `VectorImageCore`, and returns the rendered image plus combined diagnostics.
+- `VectorImageAdvancedProcessor.renderImage(svgData:options:)`
+  Convenience helper that preprocesses SVG bytes, renders through `VectorImageCore`, and returns only the image.
 - `VectorImageAdvancedResult`
   Preprocessing result containing SVG bytes plus non-fatal diagnostics.
 - `VectorImageAdvancedFeatureSet.summary`
@@ -205,7 +209,9 @@ The methods are also paired across two input styles:
 
 ### Prepare SVG data with `VectorImageAdvanced`
 
-`VectorImageAdvanced` is optional. In `1.0.0`, it establishes the compatibility-layer API and validates SVG input without changing bytes. Future minor releases can add deterministic preprocessing passes while keeping `VectorImageCore` focused on rendering.
+`VectorImageAdvanced` is optional. It validates SVG input and applies conservative deterministic cleanup before rendering. `VectorImageCore` remains the renderer.
+
+In `1.1.0`, Advanced removes script elements, SVG event handler attributes, and external resource references from the input SVG. Cleanup actions are reported as diagnostics.
 
 ```swift
 import VectorImageAdvanced
@@ -219,6 +225,20 @@ let result = try VectorImageRenderer.render(
 )
 
 let warnings = processed.diagnostics.warnings + result.diagnostics.warnings
+```
+
+If you want Advanced preprocessing and Core rendering in one call:
+
+```swift
+import VectorImageAdvanced
+
+let result = try VectorImageAdvancedProcessor.render(
+    svgData: data,
+    options: .init(size: CGSize(width: 120, height: 120))
+)
+
+let image = result.image
+let warnings = result.diagnostics.warnings
 ```
 
 ### Detect and render from raw `Data`
@@ -511,7 +531,7 @@ Important limitations:
 - Remote loading uses `URLSession`; host apps remain responsible for network entitlements, app sandbox settings, and custom HTTP policy.
 - The renderer does not execute scripts, load external resources, or resolve external stylesheets.
 - Text, masks, filters, `use`, embedded raster images, and full CSS layout are outside the supported subset.
-- `VectorImageAdvanced` validates and forwards SVG data in `1.0.0`; richer compatibility passes are intentionally left for later non-breaking releases.
+- `VectorImageAdvanced` performs conservative cleanup only. It is not a browser compatibility layer and does not resolve external resources.
 
 ## Performance Guardrails
 
@@ -534,7 +554,7 @@ These are baseline guardrails, not strict cross-machine benchmarks.
 
 ## Planned
 
-This section tracks what is already included in `0.1.0` and the stabilization work included in `1.0.0`.
+This section tracks what is already included in the public release line.
 
 ### `0.1.0` foundation
 
@@ -625,12 +645,20 @@ This section tracks what is already included in `0.1.0` and the stabilization wo
 - [x] Initial `VectorImageAdvancedProcessor` and `VectorImageAdvancedResult` API shape
 - [x] Confidence that the documented supported SVG subset is stable enough for long-term maintenance
 
+### Included in `1.1.0`
+
+- [x] Conservative Advanced cleanup for script elements
+- [x] Conservative Advanced cleanup for SVG event handler attributes
+- [x] Conservative Advanced cleanup for external resource references
+- [x] Advanced preprocessing diagnostics for cleanup actions
+- [x] Advanced render and renderImage helpers backed by Core
+
 ## Package Layout
 
 - `VectorImageCore`
   The real implementation target. Contains SVG detection, parsing, diagnostics, and rasterization into `UIImage` or `NSImage`.
 - `VectorImageAdvanced`
-  Optional preprocessing and compatibility layer that validates SVG input and prepares it for `VectorImageCore`.
+  Optional preprocessing and compatibility layer that validates and conservatively cleans SVG input before handing it to `VectorImageCore`.
 - `VectorImageUI`
   SwiftUI integration target with async SVG image loading built on `VectorImageCore`.
 

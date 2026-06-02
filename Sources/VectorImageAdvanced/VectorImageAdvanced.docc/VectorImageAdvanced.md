@@ -6,9 +6,11 @@ Validate and prepare SVG input before rendering with `VectorImageCore`.
 
 `VectorImageAdvanced` is the optional compatibility layer for `VectorImage`.
 
-In `1.0.0`, the module establishes the public preprocessing result shape and validates that incoming data is SVG. It intentionally forwards valid SVG bytes unchanged so `VectorImageCore` remains the only renderer.
+The module validates incoming SVG data and applies conservative deterministic cleanup before handing bytes to `VectorImageCore`.
 
-Future minor releases can add deterministic preprocessing passes here without expanding Core's responsibilities.
+In `1.1.0`, cleanup removes script elements, SVG event handler attributes, and external resource references. Cleanup actions are surfaced as diagnostics. `VectorImageCore` remains the only renderer.
+
+Use ``VectorImageAdvancedProcessor/process(svgData:)`` when you want to inspect or store preprocessed SVG bytes before rendering. Use ``VectorImageAdvancedProcessor/render(svgData:options:)`` when you want Advanced preprocessing and Core rendering in one call.
 
 ## Topics
 

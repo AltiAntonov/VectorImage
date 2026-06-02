@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0
+
+- Added conservative cleanup in `VectorImageAdvancedProcessor.process(svgData:)` for script elements, SVG event handler attributes, and external resource references.
+- Added preprocessing diagnostics that describe cleanup actions before rendering.
+- Added `VectorImageAdvancedProcessor.render(svgData:options:)` and `renderImage(svgData:options:)` helpers that preprocess through Advanced, then render through Core.
+- Preserved namespace declarations such as `xmlns` while removing unsupported external resource references.
+- Added Advanced regression tests for safe cleanup and preprocessing-backed rendering.
+
 ## 1.0.0
 
 - Stabilized the public `VectorImageCore` and baseline `VectorImageUI` API surface for the supported SVG subset.
