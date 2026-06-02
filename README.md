@@ -52,7 +52,7 @@ Add `VectorImage` to your Swift Package Manager dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "1.1.0")
+    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "1.2.0")
 ]
 ```
 
@@ -183,7 +183,7 @@ Current public entry points in `VectorImageUI`:
 Current public entry points in `VectorImageAdvanced`:
 
 - `VectorImageAdvancedProcessor.process(svgData:)`
-  Validates and conservatively cleans SVG bytes before rendering with `VectorImageCore`.
+  Validates, conservatively cleans, and normalizes supported style declarations before rendering with `VectorImageCore`.
 - `VectorImageAdvancedProcessor.render(svgData:options:)`
   Preprocesses SVG bytes, renders through `VectorImageCore`, and returns the rendered image plus combined diagnostics.
 - `VectorImageAdvancedProcessor.renderImage(svgData:options:)`
@@ -209,9 +209,9 @@ The methods are also paired across two input styles:
 
 ### Prepare SVG data with `VectorImageAdvanced`
 
-`VectorImageAdvanced` is optional. It validates SVG input and applies conservative deterministic cleanup before rendering. `VectorImageCore` remains the renderer.
+`VectorImageAdvanced` is optional. It validates SVG input and applies conservative deterministic preprocessing before rendering. `VectorImageCore` remains the renderer.
 
-In `1.1.0`, Advanced removes script elements, SVG event handler attributes, and external resource references from the input SVG. Cleanup actions are reported as diagnostics.
+Advanced removes script elements, SVG event handler attributes, and external resource references from the input SVG. It also normalizes supported inline `style=""` declarations and simple stylesheet rules into presentation attributes. Cleanup and unsupported stylesheet selectors are reported as diagnostics.
 
 ```swift
 import VectorImageAdvanced
@@ -531,7 +531,7 @@ Important limitations:
 - Remote loading uses `URLSession`; host apps remain responsible for network entitlements, app sandbox settings, and custom HTTP policy.
 - The renderer does not execute scripts, load external resources, or resolve external stylesheets.
 - Text, masks, filters, `use`, embedded raster images, and full CSS layout are outside the supported subset.
-- `VectorImageAdvanced` performs conservative cleanup only. It is not a browser compatibility layer and does not resolve external resources.
+- `VectorImageAdvanced` performs conservative cleanup and focused style compatibility only. It is not a browser compatibility layer and does not resolve external resources.
 
 ## Performance Guardrails
 
@@ -653,12 +653,19 @@ This section tracks what is already included in the public release line.
 - [x] Advanced preprocessing diagnostics for cleanup actions
 - [x] Advanced render and renderImage helpers backed by Core
 
+### Included in `1.2.0`
+
+- [x] Advanced inline `style=""` declaration normalization
+- [x] Advanced stylesheet inlining for simple element, class, id, and compound selectors
+- [x] Attribute precedence preserved during Advanced style preprocessing
+- [x] Unsupported stylesheet selector diagnostics
+
 ## Package Layout
 
 - `VectorImageCore`
   The real implementation target. Contains SVG detection, parsing, diagnostics, and rasterization into `UIImage` or `NSImage`.
 - `VectorImageAdvanced`
-  Optional preprocessing and compatibility layer that validates and conservatively cleans SVG input before handing it to `VectorImageCore`.
+  Optional preprocessing and compatibility layer that validates, cleans, and normalizes supported SVG style input before handing it to `VectorImageCore`.
 - `VectorImageUI`
   SwiftUI integration target with async SVG image loading built on `VectorImageCore`.
 

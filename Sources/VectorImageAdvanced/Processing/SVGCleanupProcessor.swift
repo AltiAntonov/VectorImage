@@ -20,6 +20,7 @@ enum SVGCleanupProcessor {
 
         removeScriptElements(from: &result)
         removeEventHandlerAttributes(from: &result)
+        inlineStyles(from: &result)
         removeExternalResourceAttributes(from: &result)
 
         return (result.svgText, result.warnings)
@@ -79,6 +80,15 @@ enum SVGCleanupProcessor {
                 "Removed unsupported SVG external resource reference: \(attributeName)",
                 to: &result.warnings
             )
+        }
+    }
+
+    private static func inlineStyles(from result: inout CleanupResult) {
+        let styleCompatibility = SVGStyleCompatibilityProcessor.process(result.svgText)
+        result.svgText = styleCompatibility.svgText
+
+        for warning in styleCompatibility.warnings {
+            appendUnique(warning, to: &result.warnings)
         }
     }
 
