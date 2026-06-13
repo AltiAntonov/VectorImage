@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0
+
+- Added `VectorImageAdvanced` style compatibility preprocessing for supported inline `style=""` declarations.
+- Added deterministic inlining for simple stylesheet element, class, id, and single compound selectors.
+- Preserved SVG precedence so element attributes stay above stylesheet rules and inline style declarations stay above both.
+- Removed processed `<style>` blocks from Advanced output while reporting unsupported stylesheet selectors as diagnostics.
+- Added Advanced regression tests for inline style normalization, supported stylesheet inlining, precedence, and unsupported selector diagnostics.
+
 ## 1.1.0
 
 - Added conservative cleanup in `VectorImageAdvancedProcessor.process(svgData:)` for script elements, SVG event handler attributes, and external resource references.

@@ -116,3 +116,86 @@ func rendersPreprocessedSVGDataThroughCore() throws {
 
     #expect(result.diagnostics.warnings.contains("Removed unsupported SVG element: script"))
 }
+
+@Test("Normalizes inline style declarations into presentation attributes")
+func normalizesInlineStyleDeclarationsIntoPresentationAttributes() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12">
+            <rect width="12" height="12" style="fill: #33588B; stroke: #FFFFFF;" />
+        </svg>
+        """.utf8
+    )
+
+    let result = try VectorImageAdvancedProcessor.process(svgData: data)
+    let processed = try #require(String(data: result.svgData, encoding: .utf8))
+
+    #expect(processed.contains(##"fill="#33588B""##))
+    #expect(processed.contains(##"stroke="#FFFFFF""##))
+    #expect(!processed.contains("style="))
+    #expect(result.diagnostics.warnings.contains("Inlined SVG style declarations from attribute: style"))
+}
+
+@Test("Inlines simple stylesheet class id and element rules")
+func inlinesSimpleStylesheetRules() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12">
+            <style>
+                rect { stroke: #111111; }
+                .primary { fill: #33588B; }
+                #target { opacity: 0.5; }
+            </style>
+            <rect id="target" class="primary" width="12" height="12" />
+        </svg>
+        """.utf8
+    )
+
+    let result = try VectorImageAdvancedProcessor.process(svgData: data)
+    let processed = try #require(String(data: result.svgData, encoding: .utf8))
+
+    #expect(processed.contains(##"fill="#33588B""##))
+    #expect(processed.contains(##"stroke="#111111""##))
+    #expect(processed.contains(##"opacity="0.5""##))
+    #expect(!processed.contains("<style"))
+    #expect(result.diagnostics.warnings.contains("Inlined supported SVG stylesheet rules"))
+}
+
+@Test("Keeps element attributes above stylesheet rules")
+func keepsElementAttributesAboveStylesheetRules() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12">
+            <style>.primary { fill: #33588B; stroke: #111111; }</style>
+            <rect class="primary" width="12" height="12" fill="#FF0000" />
+        </svg>
+        """.utf8
+    )
+
+    let result = try VectorImageAdvancedProcessor.process(svgData: data)
+    let processed = try #require(String(data: result.svgData, encoding: .utf8))
+
+    #expect(processed.contains(##"fill="#FF0000""##))
+    #expect(!processed.contains(##"fill="#33588B""##))
+    #expect(processed.contains(##"stroke="#111111""##))
+}
+
+@Test("Reports unsupported stylesheet selectors")
+func reportsUnsupportedStylesheetSelectors() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12">
+            <style>
+                rect > .primary { fill: #33588B; }
+                @media (prefers-color-scheme: dark) { rect { fill: #FFFFFF; } }
+            </style>
+            <rect class="primary" width="12" height="12" />
+        </svg>
+        """.utf8
+    )
+
+    let result = try VectorImageAdvancedProcessor.process(svgData: data)
+
+    #expect(result.diagnostics.warnings.contains("Unsupported SVG stylesheet rule preserved as diagnostic: rect > .primary"))
+    #expect(result.diagnostics.warnings.contains("Unsupported SVG stylesheet rule preserved as diagnostic: @media (prefers-color-scheme: dark)"))
+}
