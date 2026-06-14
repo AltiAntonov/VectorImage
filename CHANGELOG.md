@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.0
+
+- Added `VectorImageAdvanced` expansion for local `<symbol>` and `<use href="#...">` references.
+- Added support for translating expanded local uses with `x` and `y` attributes.
+- Added diagnostics for expanded local references, unresolved local references, external use references, and recursive use references.
+- Preserved unrelated `<defs>` content while removing expanded local definitions from processed output.
+- Updated iOS and macOS example apps with Advanced examples for cleanup, style compatibility, and local use expansion.
+- Added Advanced regression tests proving expanded output can render through `VectorImageCore`.
+
 ## 1.2.0
 
 - Added `VectorImageAdvanced` style compatibility preprocessing for supported inline `style=""` declarations.

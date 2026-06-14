@@ -21,6 +21,7 @@ enum SVGCleanupProcessor {
         removeScriptElements(from: &result)
         removeEventHandlerAttributes(from: &result)
         inlineStyles(from: &result)
+        expandUseReferences(from: &result)
         removeExternalResourceAttributes(from: &result)
 
         return (result.svgText, result.warnings)
@@ -88,6 +89,15 @@ enum SVGCleanupProcessor {
         result.svgText = styleCompatibility.svgText
 
         for warning in styleCompatibility.warnings {
+            appendUnique(warning, to: &result.warnings)
+        }
+    }
+
+    private static func expandUseReferences(from result: inout CleanupResult) {
+        let expansion = SVGUseExpansionProcessor.process(result.svgText)
+        result.svgText = expansion.svgText
+
+        for warning in expansion.warnings {
             appendUnique(warning, to: &result.warnings)
         }
     }

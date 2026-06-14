@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import VectorImageAdvanced
 
 struct PackageSummaryCard: View {
     var body: some View {
@@ -16,12 +17,12 @@ struct PackageSummaryCard: View {
 
             summaryRow(
                 title: "VectorImageCore",
-                description: "Production target today. Dependency-free detection, parsing, diagnostics, caching, and rasterization."
+                description: "Dependency-free detection, parsing, diagnostics, caching, and rasterization."
             )
 
             summaryRow(
                 title: "VectorImageAdvanced",
-                description: "Reserved for future higher-level SVG features beyond the focused Core renderer."
+                description: VectorImageAdvancedFeatureSet.summary
             )
 
             summaryRow(

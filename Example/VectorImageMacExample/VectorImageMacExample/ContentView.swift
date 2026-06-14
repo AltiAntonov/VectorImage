@@ -39,13 +39,14 @@ struct ContentView: View {
                 .font(.system(size: 36, weight: .black, design: .rounded))
                 .foregroundStyle(Color(red: 0.08, green: 0.12, blue: 0.18))
 
-            Text("A macOS fixture browser for validating VectorImageCore against inline SVGs, bundled assets, and public remote SVG URLs.")
+            Text("A macOS fixture browser for validating Core rendering and Advanced preprocessing against inline SVGs, bundled assets, and public remote SVG URLs.")
                 .font(.system(size: 17, weight: .medium, design: .rounded))
                 .foregroundStyle(.secondary)
 
             HStack(spacing: 10) {
                 pill("macOS 12+")
-                pill("VectorImageCore")
+                pill("VectorImage 1.2")
+                pill("Core + Advanced")
                 pill("Local SPM package")
                 pill("No private SVG APIs")
                 pill(VectorImageMacExampleRuntime.isCacheEnabled ? "Cache On" : "Cache Off")
