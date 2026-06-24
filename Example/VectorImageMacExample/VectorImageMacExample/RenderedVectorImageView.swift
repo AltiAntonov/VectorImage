@@ -7,6 +7,7 @@
 
 import AppKit
 import SwiftUI
+import VectorImageAdvanced
 import VectorImageCore
 
 struct RenderedVectorImageView: View {
@@ -85,6 +86,19 @@ struct RenderedVectorImageView: View {
             switch sample.source {
             case .svg(let svg):
                 let result = try VectorImageRenderer.render(
+                    svgData: Data(svg.utf8),
+                    options: .init(
+                        size: sample.size,
+                        scale: renderScale,
+                        contentMode: .fit,
+                        backgroundColor: sample.rasterizationBackgroundColor
+                    )
+                )
+                renderedImage = result.image
+                warnings = result.diagnostics.warnings
+                errorMessage = nil
+            case .advancedSVG(let svg):
+                let result = try VectorImageAdvancedProcessor.render(
                     svgData: Data(svg.utf8),
                     options: .init(
                         size: sample.size,

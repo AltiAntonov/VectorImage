@@ -18,7 +18,7 @@ struct PackageSummaryCard: View {
 
             summaryRow(
                 title: "VectorImageCore",
-                description: "Production target today. Dependency-free detection, parsing, diagnostics, and rasterization."
+                description: "Dependency-free detection, parsing, diagnostics, caching, and rasterization."
             )
 
             summaryRow(

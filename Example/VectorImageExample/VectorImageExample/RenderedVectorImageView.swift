@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import VectorImageAdvanced
 import VectorImageCore
 import VectorImageUI
 
@@ -51,6 +52,11 @@ struct RenderedVectorImageView: View {
         switch sample.source {
         case .svg(let svg):
             vectorImagePhaseView(source: .data(Data(svg.utf8)))
+        case .advancedSVG(let svg):
+            AdvancedVectorImageView(
+                svg: svg,
+                options: rasterizationOptions
+            )
         case .asset(let name):
             if let image = UIImage(named: name) {
                 Image(uiImage: image)
@@ -105,6 +111,87 @@ struct RenderedVectorImageView: View {
     private func diagnosticsView(_ warnings: [String]) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Diagnostics")
+                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .foregroundStyle(Color.orange)
+
+            ForEach(warnings, id: \.self) { warning in
+                Text(warning)
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 18)
+                .fill(Color.orange.opacity(0.08))
+        )
+    }
+}
+
+private struct AdvancedVectorImageView: View {
+    let svg: String
+    let options: VectorImageRasterizationOptions
+
+    @State private var renderedImage: UIImage?
+    @State private var warnings: [String] = []
+    @State private var errorMessage: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Group {
+                if let renderedImage {
+                    Image(uiImage: renderedImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else if let errorMessage {
+                    errorView(errorMessage)
+                } else {
+                    ProgressView()
+                        .tint(.white)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            if warnings.isEmpty == false {
+                diagnosticsView(warnings)
+            }
+        }
+        .padding(16)
+        .task(id: svg) {
+            await render()
+        }
+    }
+
+    @MainActor
+    private func render() async {
+        do {
+            let result = try VectorImageAdvancedProcessor.render(
+                svgData: Data(svg.utf8),
+                options: options
+            )
+            renderedImage = result.image
+            warnings = result.diagnostics.warnings
+            errorMessage = nil
+        } catch {
+            renderedImage = nil
+            warnings = []
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func errorView(_ message: String) -> some View {
+        Text(message)
+            .font(.system(size: 14, weight: .medium, design: .rounded))
+            .foregroundStyle(.white.opacity(0.8))
+            .multilineTextAlignment(.center)
+            .padding(20)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func diagnosticsView(_ warnings: [String]) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Advanced Diagnostics")
                 .font(.system(size: 13, weight: .bold, design: .rounded))
                 .foregroundStyle(Color.orange)
 

@@ -13,6 +13,7 @@ import VectorImageCore
 struct VectorImageExampleData: Identifiable {
     enum Source {
         case svg(String)
+        case advancedSVG(String)
         case asset(name: String)
         case remoteURL(URL)
     }
@@ -49,7 +50,109 @@ extension VectorImageExampleData {
         URL(string: "https://cdn.jsdelivr.net/npm/simple-icons@v16/icons/\(brand).svg")!
     }
 
+    private static let advancedInlineStyleSVG = """
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" width="240" height="140">
+      <rect x="0" y="0" width="240" height="140" style="fill: #0F172A;" />
+      <circle cx="78" cy="70" r="42" style="fill: #38BDF8; stroke: #E0F2FE; stroke-width: 8;" />
+      <rect x="132" y="34" width="72" height="72" rx="14" style="fill: #F97316; stroke: #FED7AA; stroke-width: 8;" />
+    </svg>
+    """
+
+    private static let advancedStylesheetSVG = """
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" width="240" height="140">
+      <style>
+        rect.canvas { fill: #111827; }
+        .accent { fill: #A3E635; stroke: #ECFCCB; stroke-width: 6; }
+        #focus { fill: #2563EB; }
+      </style>
+      <rect class="canvas" x="0" y="0" width="240" height="140" />
+      <circle class="accent" cx="74" cy="70" r="42" />
+      <rect id="focus" class="accent" x="132" y="34" width="72" height="72" rx="16" />
+    </svg>
+    """
+
+    private static let advancedUseExpansionSVG = """
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" width="240" height="140">
+      <defs>
+        <symbol id="spark" viewBox="0 0 36 36">
+          <path d="M 18 0 L 24 12 L 36 18 L 24 24 L 18 36 L 12 24 L 0 18 L 12 12 Z" fill="#FACC15" />
+          <circle cx="18" cy="18" r="6" fill="#0F172A" />
+        </symbol>
+      </defs>
+      <rect x="0" y="0" width="240" height="140" fill="#0F172A" />
+      <use href="#spark" x="34" y="26" />
+      <use href="#spark" x="102" y="52" />
+      <use href="#spark" x="170" y="26" />
+    </svg>
+    """
+
+    private static let advancedCleanupSVG = """
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" width="240" height="140" onload="alert('ignored')">
+      <script>alert('ignored')</script>
+      <rect x="0" y="0" width="240" height="140" fill="#172033" />
+      <rect x="26" y="24" width="188" height="92" rx="22" fill="#F8FAFC" onclick="alert('ignored')" />
+      <path d="M 54 86 C 84 38, 118 38, 148 86 C 166 116, 186 108, 198 82" fill="none" stroke="#0EA5E9" stroke-width="12" />
+      <image href="https://example.com/external-image.png" x="0" y="0" width="20" height="20" />
+    </svg>
+    """
+
+    private static let advancedUnsupportedSelectorSVG = """
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" width="240" height="140">
+      <style>
+        rect > .unsupported { fill: #EF4444; }
+        .safe { fill: #22C55E; }
+      </style>
+      <rect x="0" y="0" width="240" height="140" fill="#0F172A" />
+      <circle class="safe" cx="120" cy="70" r="44" />
+    </svg>
+    """
+
     static let samples: [VectorImageExampleData] = [
+        .init(
+            id: "advanced-inline-style",
+            title: "Advanced: Inline Style Normalization",
+            subtitle: "Uses VectorImageAdvanced to convert supported style=\"\" declarations into Core-friendly presentation attributes.",
+            source: .advancedSVG(advancedInlineStyleSVG),
+            size: CGSize(width: 240, height: 140),
+            previewBackgroundColor: Color(red: 0.08, green: 0.11, blue: 0.17),
+            rasterizationBackgroundColor: nil
+        ),
+        .init(
+            id: "advanced-stylesheet",
+            title: "Advanced: Stylesheet Inlining",
+            subtitle: "Simple element, class, id, and compound selectors are inlined before Core renders the SVG.",
+            source: .advancedSVG(advancedStylesheetSVG),
+            size: CGSize(width: 240, height: 140),
+            previewBackgroundColor: Color(red: 0.08, green: 0.11, blue: 0.17),
+            rasterizationBackgroundColor: nil
+        ),
+        .init(
+            id: "advanced-use-expansion",
+            title: "Advanced: Symbol Use Expansion",
+            subtitle: "Local <symbol> definitions are expanded from <use href=\"#...\"> references before Core rendering.",
+            source: .advancedSVG(advancedUseExpansionSVG),
+            size: CGSize(width: 240, height: 140),
+            previewBackgroundColor: Color(red: 0.08, green: 0.11, blue: 0.17),
+            rasterizationBackgroundColor: nil
+        ),
+        .init(
+            id: "advanced-cleanup",
+            title: "Advanced: Safe Cleanup",
+            subtitle: "Scripts, event handlers, and external references are removed and reported as preprocessing diagnostics.",
+            source: .advancedSVG(advancedCleanupSVG),
+            size: CGSize(width: 240, height: 140),
+            previewBackgroundColor: Color(red: 0.08, green: 0.11, blue: 0.17),
+            rasterizationBackgroundColor: nil
+        ),
+        .init(
+            id: "advanced-unsupported-selector",
+            title: "Advanced: Unsupported CSS Diagnostic",
+            subtitle: "Supported CSS is inlined while unsupported selectors remain visible through diagnostics.",
+            source: .advancedSVG(advancedUnsupportedSelectorSVG),
+            size: CGSize(width: 240, height: 140),
+            previewBackgroundColor: Color(red: 0.08, green: 0.11, blue: 0.17),
+            rasterizationBackgroundColor: nil
+        ),
         .init(
             id: "brand-card",
             title: "Brand Card",

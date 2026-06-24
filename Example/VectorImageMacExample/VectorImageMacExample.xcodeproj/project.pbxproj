@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		AA3000000000000000000001 /* VectorImageCore in Frameworks */ = {isa = PBXBuildFile; productRef = AA3000000000000000000003 /* VectorImageCore */; };
+		AA3000000000000000000004 /* VectorImageAdvanced in Frameworks */ = {isa = PBXBuildFile; productRef = AA3000000000000000000005 /* VectorImageAdvanced */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA3000000000000000000001 /* VectorImageCore in Frameworks */,
+				AA3000000000000000000004 /* VectorImageAdvanced in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,6 +120,7 @@
 			name = VectorImageMacExample;
 			packageProductDependencies = (
 				AA3000000000000000000003 /* VectorImageCore */,
+				AA3000000000000000000005 /* VectorImageAdvanced */,
 			);
 			productName = VectorImageMacExample;
 			productReference = 6CFB78012F996A5B0028F1A6 /* VectorImageMacExample.app */;
@@ -617,6 +620,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AA3000000000000000000002 /* XCLocalSwiftPackageReference "../../" */;
 			productName = VectorImageCore;
+		};
+		AA3000000000000000000005 /* VectorImageAdvanced */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AA3000000000000000000002 /* XCLocalSwiftPackageReference "../../" */;
+			productName = VectorImageAdvanced;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
