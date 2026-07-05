@@ -377,3 +377,77 @@ func reportsRecursiveLocalUseReferences() throws {
     #expect(processed.contains("<use") == false)
     #expect(result.diagnostics.warnings.contains("Unsupported recursive SVG use reference: #loop"))
 }
+
+@Test("Adds missing root dimensions from viewBox")
+func addsMissingRootDimensionsFromViewBox() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 12">
+            <rect width="24" height="12" fill="#33588B" />
+        </svg>
+        """.utf8
+    )
+
+    let result = try VectorImageAdvancedProcessor.process(svgData: data)
+    let processed = try #require(String(data: result.svgData, encoding: .utf8))
+
+    #expect(processed.contains(##"width="24""##))
+    #expect(processed.contains(##"height="12""##))
+    #expect(result.diagnostics.warnings.contains("Normalized root SVG dimensions from viewBox"))
+}
+
+@Test("Normalizes root percentage dimensions from viewBox")
+func normalizesRootPercentageDimensionsFromViewBox() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 240 140">
+            <rect width="240" height="140" fill="#33588B" />
+        </svg>
+        """.utf8
+    )
+
+    let result = try VectorImageAdvancedProcessor.process(svgData: data)
+    let processed = try #require(String(data: result.svgData, encoding: .utf8))
+
+    #expect(processed.contains(##"width="240""##))
+    #expect(processed.contains(##"height="140""##))
+    #expect(processed.contains("100%") == false)
+    #expect(result.diagnostics.warnings.contains("Normalized root SVG percentage dimensions from viewBox"))
+}
+
+@Test("Flattens simple nested SVG layout into a transformed group")
+func flattensSimpleNestedSVGLayoutIntoTransformedGroup() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80">
+            <svg x="10" y="20" width="50" height="25" viewBox="0 0 100 50">
+                <rect width="100" height="50" fill="#33588B" />
+            </svg>
+        </svg>
+        """.utf8
+    )
+
+    let result = try VectorImageAdvancedProcessor.process(svgData: data)
+    let processed = try #require(String(data: result.svgData, encoding: .utf8))
+
+    #expect(processed.contains("<svg x=") == false)
+    #expect(processed.contains(##"<g transform="translate(10 20) scale(0.5 0.5)">"##))
+    #expect(result.diagnostics.warnings.contains("Flattened nested SVG layout into transform"))
+}
+
+@Test("Reports nested SVG layout that cannot be safely normalized")
+func reportsNestedSVGLayoutThatCannotBeSafelyNormalized() throws {
+    let data = Data(
+        """
+        <svg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80">
+            <svg x="10" y="20" width="50%" height="25" viewBox="0 0 100 50">
+                <rect width="100" height="50" fill="#33588B" />
+            </svg>
+        </svg>
+        """.utf8
+    )
+
+    let result = try VectorImageAdvancedProcessor.process(svgData: data)
+
+    #expect(result.diagnostics.warnings.contains("Unsupported nested SVG layout could not be normalized"))
+}

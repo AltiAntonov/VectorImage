@@ -13,7 +13,7 @@ import VectorImageCore
 /// Describes the role of the optional advanced SVG compatibility layer.
 public enum VectorImageAdvancedFeatureSet {
     /// Returns a short description of the target's role.
-    public static let summary = "Optional preprocessing layer for cleanup, style compatibility, and local SVG reference expansion before VectorImageCore rendering."
+    public static let summary = "Optional preprocessing layer for cleanup, style compatibility, layout normalization, and local SVG reference expansion before VectorImageCore rendering."
 }
 
 /// Result produced by the advanced SVG preprocessing pipeline.

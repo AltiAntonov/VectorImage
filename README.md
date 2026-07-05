@@ -52,7 +52,7 @@ Add `VectorImage` to your Swift Package Manager dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "1.3.0")
+    .package(url: "https://github.com/AltiAntonov/VectorImage.git", from: "1.4.0")
 ]
 ```
 
@@ -183,7 +183,7 @@ Current public entry points in `VectorImageUI`:
 Current public entry points in `VectorImageAdvanced`:
 
 - `VectorImageAdvancedProcessor.process(svgData:)`
-  Validates, conservatively cleans, normalizes supported style declarations, and expands supported local references before rendering with `VectorImageCore`.
+  Validates, conservatively cleans, normalizes supported style/layout forms, and expands supported local references before rendering with `VectorImageCore`.
 - `VectorImageAdvancedProcessor.render(svgData:options:)`
   Preprocesses SVG bytes, renders through `VectorImageCore`, and returns the rendered image plus combined diagnostics.
 - `VectorImageAdvancedProcessor.renderImage(svgData:options:)`
@@ -211,7 +211,7 @@ The methods are also paired across two input styles:
 
 `VectorImageAdvanced` is optional. It validates SVG input and applies conservative deterministic preprocessing before rendering. `VectorImageCore` remains the renderer.
 
-Advanced removes script elements, SVG event handler attributes, and external resource references from the input SVG. It also normalizes supported inline `style=""` declarations, simple stylesheet rules, and local `<symbol>` / `<use href="#...">` references into Core-friendly SVG. Cleanup actions, unsupported stylesheet selectors, unresolved use references, external use references, and recursive use references are reported as diagnostics.
+Advanced removes script elements, SVG event handler attributes, and external resource references from the input SVG. It also normalizes supported inline `style=""` declarations, simple stylesheet rules, local `<symbol>` / `<use href="#...">` references, root `viewBox` dimensions, safe root percentage dimensions, and simple nested `svg` layouts into Core-friendly SVG. Cleanup actions, unsupported stylesheet selectors, unresolved use references, external use references, recursive use references, and unsafe layout forms are reported as diagnostics.
 
 ```swift
 import VectorImageAdvanced
@@ -531,7 +531,7 @@ Important limitations:
 - Remote loading uses `URLSession`; host apps remain responsible for network entitlements, app sandbox settings, and custom HTTP policy.
 - The renderer does not execute scripts, load external resources, or resolve external stylesheets.
 - Text, masks, filters, `use`, embedded raster images, and full CSS layout are outside the supported subset.
-- `VectorImageAdvanced` performs conservative cleanup, focused style compatibility, and local reference expansion only. It is not a browser compatibility layer and does not resolve external resources.
+- `VectorImageAdvanced` performs conservative cleanup, focused style compatibility, local reference expansion, and safe layout normalization only. It is not a browser compatibility layer and does not resolve external resources.
 
 ## Performance Guardrails
 
@@ -667,12 +667,20 @@ This section tracks what is already included in the public release line.
 - [x] Diagnostics for expanded, unresolved, external, and recursive use references
 - [x] iOS and macOS example cards for current Advanced behavior
 
+### Included in `1.4.0`
+
+- [x] Advanced root dimensions normalized from numeric `viewBox`
+- [x] Advanced root percentage dimensions converted when `viewBox` makes the result deterministic
+- [x] Advanced simple nested `svg` layout flattened into Core-friendly transforms
+- [x] Diagnostics for nested `svg` layout that cannot be safely normalized
+- [x] iOS and macOS example card for Advanced layout normalization
+
 ## Package Layout
 
 - `VectorImageCore`
   The real implementation target. Contains SVG detection, parsing, diagnostics, and rasterization into `UIImage` or `NSImage`.
 - `VectorImageAdvanced`
-  Optional preprocessing and compatibility layer that validates, cleans, normalizes supported SVG style input, and expands supported local references before handing SVG data to `VectorImageCore`.
+  Optional preprocessing and compatibility layer that validates, cleans, normalizes supported SVG style/layout input, and expands supported local references before handing SVG data to `VectorImageCore`.
 - `VectorImageUI`
   SwiftUI integration target with async SVG image loading built on `VectorImageCore`.
 

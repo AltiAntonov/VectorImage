@@ -675,166 +675,176 @@ func rendersRepresentativeStandaloneFixtures() throws {
 @available(iOS 15.0, macOS 12.0, *)
 @Test("Caches repeated remote renders when cache is enabled")
 func cachesRepeatedRemoteRenders() async throws {
-    let url = URL(string: "https://example.com/test.svg")!
-    URLProtocolStub.configure(
-        url: url,
-        payload: Data(
-            """
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-              <rect width="40" height="40" fill="#111111" />
-            </svg>
-            """.utf8
+    try await withURLProtocolStubIsolation {
+        let url = URL(string: "https://example.com/test.svg")!
+        URLProtocolStub.configure(
+            url: url,
+            payload: Data(
+                """
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+                  <rect width="40" height="40" fill="#111111" />
+                </svg>
+                """.utf8
+            )
         )
-    )
 
-    let configuration = URLSessionConfiguration.ephemeral
-    configuration.protocolClasses = [URLProtocolStub.self]
-    let session = URLSession(configuration: configuration)
-    let loader = VectorImageLoader(session: session)
-    let cache = VectorImageCache(countLimit: 10)
-    let source = VectorImageSource.remoteURL(url)
-    let options = VectorImageRasterizationOptions(size: CGSize(width: 40, height: 40))
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [URLProtocolStub.self]
+        let session = URLSession(configuration: configuration)
+        let loader = VectorImageLoader(session: session)
+        let cache = VectorImageCache(countLimit: 10)
+        let source = VectorImageSource.remoteURL(url)
+        let options = VectorImageRasterizationOptions(size: CGSize(width: 40, height: 40))
 
-    let first = try await VectorImageRenderer.render(from: source, loader: loader, options: options, cache: cache)
-    let second = try await VectorImageRenderer.render(from: source, loader: loader, options: options, cache: cache)
-    let requestCount = URLProtocolStub.requestCount(for: url)
+        let first = try await VectorImageRenderer.render(from: source, loader: loader, options: options, cache: cache)
+        let second = try await VectorImageRenderer.render(from: source, loader: loader, options: options, cache: cache)
+        let requestCount = URLProtocolStub.requestCount(for: url)
 
-    #expect(logicalSize(of: first.image).width == 40)
-    #expect(logicalSize(of: second.image).width == 40)
-    #expect(requestCount == 1)
+        #expect(logicalSize(of: first.image).width == 40)
+        #expect(logicalSize(of: second.image).width == 40)
+        #expect(requestCount == 1)
+    }
 }
 
 @available(iOS 15.0, macOS 12.0, *)
 @Test("Coalesces concurrent identical remote renders without requiring cache")
 func coalescesConcurrentRemoteRenders() async throws {
-    let url = URL(string: "https://example.com/concurrent.svg")!
-    URLProtocolStub.configure(
-        url: url,
-        payload: Data(
-            """
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-              <circle cx="24" cy="24" r="20" fill="#0055FF" />
-            </svg>
-            """.utf8
-        ),
-        delay: 0.05
-    )
+    try await withURLProtocolStubIsolation {
+        let url = URL(string: "https://example.com/concurrent.svg")!
+        URLProtocolStub.configure(
+            url: url,
+            payload: Data(
+                """
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="20" fill="#0055FF" />
+                </svg>
+                """.utf8
+            ),
+            delay: 0.05
+        )
 
-    let configuration = URLSessionConfiguration.ephemeral
-    configuration.protocolClasses = [URLProtocolStub.self]
-    let session = URLSession(configuration: configuration)
-    let loader = VectorImageLoader(session: session)
-    let source = VectorImageSource.remoteURL(url)
-    let options = VectorImageRasterizationOptions(size: CGSize(width: 48, height: 48))
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [URLProtocolStub.self]
+        let session = URLSession(configuration: configuration)
+        let loader = VectorImageLoader(session: session)
+        let source = VectorImageSource.remoteURL(url)
+        let options = VectorImageRasterizationOptions(size: CGSize(width: 48, height: 48))
 
-    async let first = VectorImageRenderer.render(from: source, loader: loader, options: options, cache: nil)
-    async let second = VectorImageRenderer.render(from: source, loader: loader, options: options, cache: nil)
+        async let first = VectorImageRenderer.render(from: source, loader: loader, options: options, cache: nil)
+        async let second = VectorImageRenderer.render(from: source, loader: loader, options: options, cache: nil)
 
-    let (firstResult, secondResult) = try await (first, second)
-    let requestCount = URLProtocolStub.requestCount(for: url)
+        let (firstResult, secondResult) = try await (first, second)
+        let requestCount = URLProtocolStub.requestCount(for: url)
 
-    #expect(logicalSize(of: firstResult.image).width == 48)
-    #expect(logicalSize(of: secondResult.image).width == 48)
-    #expect(requestCount == 1)
+        #expect(logicalSize(of: firstResult.image).width == 48)
+        #expect(logicalSize(of: secondResult.image).width == 48)
+        #expect(requestCount == 1)
+    }
 }
 
 @available(iOS 15.0, macOS 12.0, *)
 @Test("Configuration cache policy reuses completed remote renders")
 func configurationCachePolicyReusesCompletedRemoteRenders() async throws {
-    let url = URL(string: "https://example.com/configuration-cache.svg")!
-    URLProtocolStub.configure(
-        url: url,
-        payload: Data(
-            """
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-              <rect width="40" height="40" fill="#118855" />
-            </svg>
-            """.utf8
+    try await withURLProtocolStubIsolation {
+        let url = URL(string: "https://example.com/configuration-cache.svg")!
+        URLProtocolStub.configure(
+            url: url,
+            payload: Data(
+                """
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+                  <rect width="40" height="40" fill="#118855" />
+                </svg>
+                """.utf8
+            )
         )
-    )
 
-    let configuration = URLSessionConfiguration.ephemeral
-    configuration.protocolClasses = [URLProtocolStub.self]
-    let session = URLSession(configuration: configuration)
-    let vectorConfiguration = VectorImageConfiguration(
-        loader: VectorImageLoader(session: session),
-        cachePolicy: .enabled(countLimit: 10)
-    )
-    let source = VectorImageSource.remoteURL(url)
-    let options = VectorImageRasterizationOptions(size: CGSize(width: 40, height: 40))
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [URLProtocolStub.self]
+        let session = URLSession(configuration: configuration)
+        let vectorConfiguration = VectorImageConfiguration(
+            loader: VectorImageLoader(session: session),
+            cachePolicy: .enabled(countLimit: 10)
+        )
+        let source = VectorImageSource.remoteURL(url)
+        let options = VectorImageRasterizationOptions(size: CGSize(width: 40, height: 40))
 
-    _ = try await VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
-    _ = try await VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
+        _ = try await VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
+        _ = try await VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
 
-    let requestCount = URLProtocolStub.requestCount(for: url)
-    #expect(requestCount == 1)
+        let requestCount = URLProtocolStub.requestCount(for: url)
+        #expect(requestCount == 1)
+    }
 }
 
 @available(iOS 15.0, macOS 12.0, *)
 @Test("Configuration cache policy can disable completed-result caching")
 func configurationCachePolicyCanDisableCompletedResultCaching() async throws {
-    let url = URL(string: "https://example.com/configuration-cache-disabled.svg")!
-    URLProtocolStub.configure(
-        url: url,
-        payload: Data(
-            """
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-              <rect width="40" height="40" fill="#AA3311" />
-            </svg>
-            """.utf8
+    try await withURLProtocolStubIsolation {
+        let url = URL(string: "https://example.com/configuration-cache-disabled.svg")!
+        URLProtocolStub.configure(
+            url: url,
+            payload: Data(
+                """
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+                  <rect width="40" height="40" fill="#AA3311" />
+                </svg>
+                """.utf8
+            )
         )
-    )
 
-    let configuration = URLSessionConfiguration.ephemeral
-    configuration.protocolClasses = [URLProtocolStub.self]
-    let session = URLSession(configuration: configuration)
-    let vectorConfiguration = VectorImageConfiguration(
-        loader: VectorImageLoader(session: session),
-        cachePolicy: .disabled
-    )
-    let source = VectorImageSource.remoteURL(url)
-    let options = VectorImageRasterizationOptions(size: CGSize(width: 40, height: 40))
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [URLProtocolStub.self]
+        let session = URLSession(configuration: configuration)
+        let vectorConfiguration = VectorImageConfiguration(
+            loader: VectorImageLoader(session: session),
+            cachePolicy: .disabled
+        )
+        let source = VectorImageSource.remoteURL(url)
+        let options = VectorImageRasterizationOptions(size: CGSize(width: 40, height: 40))
 
-    _ = try await VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
-    _ = try await VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
+        _ = try await VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
+        _ = try await VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
 
-    let requestCount = URLProtocolStub.requestCount(for: url)
-    #expect(requestCount == 2)
+        let requestCount = URLProtocolStub.requestCount(for: url)
+        #expect(requestCount == 2)
+    }
 }
 
 @available(iOS 15.0, macOS 12.0, *)
 @Test("Configuration in-flight policy can disable request coalescing")
 func configurationInFlightPolicyCanDisableRequestCoalescing() async throws {
-    let url = URL(string: "https://example.com/configuration-coalescing-disabled.svg")!
-    URLProtocolStub.configure(
-        url: url,
-        payload: Data(
-            """
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
-              <circle cx="24" cy="24" r="20" fill="#6633AA" />
-            </svg>
-            """.utf8
-        ),
-        delay: 0.05
-    )
+    try await withURLProtocolStubIsolation {
+        let url = URL(string: "https://example.com/configuration-coalescing-disabled.svg")!
+        URLProtocolStub.configure(
+            url: url,
+            payload: Data(
+                """
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+                  <circle cx="24" cy="24" r="20" fill="#6633AA" />
+                </svg>
+                """.utf8
+            ),
+            delay: 0.05
+        )
 
-    let configuration = URLSessionConfiguration.ephemeral
-    configuration.protocolClasses = [URLProtocolStub.self]
-    let session = URLSession(configuration: configuration)
-    let vectorConfiguration = VectorImageConfiguration(
-        loader: VectorImageLoader(session: session),
-        inFlightRequestPolicy: .disabled
-    )
-    let source = VectorImageSource.remoteURL(url)
-    let options = VectorImageRasterizationOptions(size: CGSize(width: 48, height: 48))
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [URLProtocolStub.self]
+        let session = URLSession(configuration: configuration)
+        let vectorConfiguration = VectorImageConfiguration(
+            loader: VectorImageLoader(session: session),
+            inFlightRequestPolicy: .disabled
+        )
+        let source = VectorImageSource.remoteURL(url)
+        let options = VectorImageRasterizationOptions(size: CGSize(width: 48, height: 48))
 
-    async let first = VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
-    async let second = VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
+        async let first = VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
+        async let second = VectorImageRenderer.render(from: source, configuration: vectorConfiguration, options: options)
 
-    _ = try await (first, second)
+        _ = try await (first, second)
 
-    let requestCount = URLProtocolStub.requestCount(for: url)
-    #expect(requestCount == 2)
+        let requestCount = URLProtocolStub.requestCount(for: url)
+        #expect(requestCount == 2)
+    }
 }
 
 private func logicalSize(of image: VectorImagePlatformImage) -> CGSize {
@@ -932,6 +942,43 @@ private func cgImage(from image: VectorImagePlatformImage) -> CGImage? {
     var proposedRect = CGRect(origin: .zero, size: image.size)
     return image.cgImage(forProposedRect: &proposedRect, context: nil, hints: nil)
 #endif
+}
+
+private func withURLProtocolStubIsolation<T>(_ operation: () async throws -> T) async throws -> T {
+    await URLProtocolStubIsolationGate.shared.acquire()
+    defer {
+        Task {
+            await URLProtocolStubIsolationGate.shared.release()
+        }
+    }
+
+    return try await operation()
+}
+
+private actor URLProtocolStubIsolationGate {
+    static let shared = URLProtocolStubIsolationGate()
+
+    private var isLocked = false
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+
+    func acquire() async {
+        if !isLocked {
+            isLocked = true
+            return
+        }
+
+        await withCheckedContinuation { continuation in
+            waiters.append(continuation)
+        }
+    }
+
+    func release() {
+        if waiters.isEmpty {
+            isLocked = false
+        } else {
+            waiters.removeFirst().resume()
+        }
+    }
 }
 
 private final class URLProtocolStub: URLProtocol, @unchecked Sendable {
