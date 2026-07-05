@@ -22,6 +22,7 @@ enum SVGCleanupProcessor {
         removeEventHandlerAttributes(from: &result)
         inlineStyles(from: &result)
         expandUseReferences(from: &result)
+        normalizeLayout(from: &result)
         removeExternalResourceAttributes(from: &result)
 
         return (result.svgText, result.warnings)
@@ -98,6 +99,15 @@ enum SVGCleanupProcessor {
         result.svgText = expansion.svgText
 
         for warning in expansion.warnings {
+            appendUnique(warning, to: &result.warnings)
+        }
+    }
+
+    private static func normalizeLayout(from result: inout CleanupResult) {
+        let normalization = SVGLayoutNormalizationProcessor.process(result.svgText)
+        result.svgText = normalization.svgText
+
+        for warning in normalization.warnings {
             appendUnique(warning, to: &result.warnings)
         }
     }

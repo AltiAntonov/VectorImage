@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.0
+
+- Added `VectorImageAdvanced` layout normalization for root dimensions derived from numeric `viewBox` values.
+- Added safe conversion of root percentage dimensions when the `viewBox` provides deterministic concrete dimensions.
+- Added flattening for simple nested `svg` layouts into Core-friendly group transforms.
+- Added diagnostics when nested `svg` layout cannot be safely normalized.
+- Updated iOS and macOS example apps with an Advanced layout-normalization sample.
+- Added Advanced regression tests for root dimension normalization, percentage conversion, nested layout flattening, and unsafe nested layout diagnostics.
+
 ## 1.3.0
 
 - Added `VectorImageAdvanced` expansion for local `<symbol>` and `<use href="#...">` references.

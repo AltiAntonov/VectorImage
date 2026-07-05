@@ -86,6 +86,21 @@ extension VectorImageExampleData {
     </svg>
     """
 
+    private static let advancedLayoutNormalizationSVG = """
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 240 140">
+      <rect x="0" y="0" width="240" height="140" fill="#0F172A" />
+      <svg x="24" y="24" width="84" height="84" viewBox="0 0 42 42">
+        <circle cx="21" cy="21" r="18" fill="#38BDF8" />
+        <path d="M 12 22 L 19 29 L 31 14" fill="none" stroke="#F8FAFC" stroke-width="5" />
+      </svg>
+      <svg x="132" y="30" width="72" height="72" viewBox="0 0 36 36">
+        <rect x="3" y="3" width="30" height="30" rx="8" fill="#F97316" />
+        <circle cx="18" cy="18" r="8" fill="#FED7AA" />
+      </svg>
+      <rect x="24" y="118" width="180" height="6" rx="3" fill="#A3E635" />
+    </svg>
+    """
+
     private static let advancedCleanupSVG = """
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" width="240" height="140" onload="alert('ignored')">
       <script>alert('ignored')</script>
@@ -131,6 +146,15 @@ extension VectorImageExampleData {
             title: "Advanced: Symbol Use Expansion",
             subtitle: "Local <symbol> definitions are expanded from <use href=\"#...\"> references before Core rendering.",
             source: .advancedSVG(advancedUseExpansionSVG),
+            size: CGSize(width: 240, height: 140),
+            previewBackgroundColor: Color(red: 0.08, green: 0.11, blue: 0.17),
+            rasterizationBackgroundColor: nil
+        ),
+        VectorImageExampleData(
+            id: "advanced-layout-normalization",
+            title: "Advanced: Layout Normalization",
+            subtitle: "Root percentage dimensions and simple nested SVG viewBox layout are normalized before Core rendering.",
+            source: .advancedSVG(advancedLayoutNormalizationSVG),
             size: CGSize(width: 240, height: 140),
             previewBackgroundColor: Color(red: 0.08, green: 0.11, blue: 0.17),
             rasterizationBackgroundColor: nil
